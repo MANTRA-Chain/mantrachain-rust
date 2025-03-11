@@ -171,10 +171,10 @@ pub enum ExecuteMsg {
         /// When provided, if the slippage exceeds this value, the liquidity provision will not be
         /// executed.
         slippage_tolerance: Option<Decimal>,
-        /// The maximum allowable spread between the bid and ask prices for the pool.
-        /// When provided, if the spread exceeds this value, the liquidity provision will not be
+        /// The maximum allowable slippage for the pool.
+        /// When provided, if the slippage exceeds this value, the liquidity provision will not be
         /// executed.
-        max_spread: Option<Decimal>,
+        max_slippage: Option<Decimal>,
         /// The receiver of the LP
         receiver: Option<String>,
         /// The identifier for the pool to provide liquidity for.
@@ -191,9 +191,9 @@ pub enum ExecuteMsg {
         ask_asset_denom: String,
         /// The belief price of the swap.
         belief_price: Option<Decimal>,
-        /// The maximum spread to incur when performing the swap. If the spread exceeds this value,
-        /// the swap will not be executed. Max 50%.
-        max_spread: Option<Decimal>,
+        /// The maximum allowable slippage for the pool.
+        /// When provided, if the slippage exceeds this value, the swap will not be executed.
+        max_slippage: Option<Decimal>,
         /// The recipient of the output tokens. If not provided, the tokens will be sent to the sender
         /// of the message.
         receiver: Option<String>,
@@ -216,9 +216,9 @@ pub enum ExecuteMsg {
         ///
         /// If left unspecified, tokens will be sent to the sender of the message.
         receiver: Option<String>,
-        /// The maximum spread to incur when performing the swap. If the spread exceeds this value,
-        /// the swap will not be executed. Max 50%.
-        max_spread: Option<Decimal>,
+        /// The maximum allowable slippage for the pool.
+        /// When provided, if the slippage exceeds this value, the swap will not be executed.
+        max_slippage: Option<Decimal>,
     },
     /// Updates the configuration of the contract.
     /// If a field is not specified (i.e., set to `None`), it will not be modified.
@@ -340,8 +340,8 @@ pub struct AssetDecimalsResponse {
 pub struct SimulationResponse {
     /// The return amount of the ask asset given the offer amount.
     pub return_amount: Uint128,
-    /// The spread amount of the swap.
-    pub spread_amount: Uint128,
+    /// The slippage amount of the swap.
+    pub slippage_amount: Uint128,
     /// The swap fee amount of the swap.
     pub swap_fee_amount: Uint128,
     /// The protocol fee amount of the swap.
@@ -357,8 +357,8 @@ pub struct SimulationResponse {
 pub struct ReverseSimulationResponse {
     /// The amount of the offer asset needed to get the ask amount.
     pub offer_amount: Uint128,
-    /// The spread amount of the swap.
-    pub spread_amount: Uint128,
+    /// The slippage amount of the swap.
+    pub slippage_amount: Uint128,
     /// The swap fee amount of the swap.
     pub swap_fee_amount: Uint128,
     /// The protocol fee amount of the swap.
@@ -387,8 +387,8 @@ pub struct FeatureToggle {
 pub struct SimulateSwapOperationsResponse {
     /// The return amount of the ask asset after the swap operations.
     pub return_amount: Uint128,
-    /// The spreads of the swap.
-    pub spreads: Vec<Coin>,
+    /// The slippage amounts of the swap.
+    pub slippage_amounts: Vec<Coin>,
     /// The swap fees of the swap.
     pub swap_fees: Vec<Coin>,
     /// The protocol fees of the swap.
@@ -404,8 +404,8 @@ pub struct SimulateSwapOperationsResponse {
 pub struct ReverseSimulateSwapOperationsResponse {
     /// The amount of the initial token needed to get the final token after the swap operations.
     pub offer_amount: Uint128,
-    /// The spreads of the swap.
-    pub spreads: Vec<Coin>,
+    /// The slippage amounts of the swap.
+    pub slippage_amounts: Vec<Coin>,
     /// The swap fees of the swap.
     pub swap_fees: Vec<Coin>,
     /// The protocol fees of the swap.
