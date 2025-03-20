@@ -11,7 +11,8 @@ use proto_build::{
 };
 
 /// The mantrachain commit or tag to be cloned and used to build the proto files
-const MANTRACHAIN_REV: &str = "v3.0.0";
+const MANTRACHAIN_REV: &str = "v4.0.0";
+const CONNECT_REV: &str = "v2.3.0-mantra-1";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
@@ -20,6 +21,8 @@ const MANTRACHAIN_REV: &str = "v3.0.0";
 const OUT_DIR: &str = "../mantrachain-std/src/types/";
 /// Directory where the cosmos-sdk submodule is located
 const COSMOS_SDK_DIR: &str = "../../dependencies/cosmos-sdk/";
+/// Directory where the connect submodule is located
+const CONNECT: &str = "../../dependencies/connect";
 /// Directory where the mantrachain submodule is located
 const MANTRACHAIN_DIR: &str = "../../dependencies/mantrachain/";
 
@@ -35,6 +38,7 @@ pub fn generate() {
     if args.iter().any(|arg| arg == "--update-deps") {
         git::update_submodule(COSMOS_SDK_DIR, &cosmos_sdk_rev);
         git::update_submodule(MANTRACHAIN_DIR, MANTRACHAIN_REV);
+        git::update_submodule(CONNECT, CONNECT_REV);
     }
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
@@ -54,12 +58,20 @@ pub fn generate() {
         exclude_mods: vec!["reflection".to_string(), "autocli".to_string()],
     };
 
+    let connect_project = CosmosProject {
+        name: "connect".to_string(),
+        version: CONNECT_REV.to_string(),
+        project_dir: CONNECT.to_string(),
+        exclude_mods: vec![],
+    };
+
     let mantrachain_code_generator = CodeGenerator::new(
         out_dir,
         tmp_build_dir,
         mantrachain_project,
         vec![
             cosmos_project,
+            connect_project,
         ],
     );
 
