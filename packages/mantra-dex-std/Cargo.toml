@@ -7,7 +7,7 @@ keywords             = ["mantrachain", "mantra", "dex", "amm", "cosmwasm"]
 license.workspace    = true
 name                 = "mantra-dex-std"
 repository.workspace = true
-version              = "2.1.4"
+version              = "2.1.5"
 
 [dependencies]
 anybuf.workspace          = true

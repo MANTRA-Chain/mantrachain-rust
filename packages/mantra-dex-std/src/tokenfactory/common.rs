@@ -21,6 +21,7 @@ impl Protocol {
 
 #[allow(dead_code)]
 pub(crate) enum MsgTypes {
+    SetBeforeSendHook,
     CreateDenom,
     Mint,
     Burn,
@@ -33,6 +34,7 @@ impl MsgTypes {
             Self::CreateDenom => "MsgCreateDenom",
             Self::Mint => "MsgMint",
             Self::Burn => "MsgBurn",
+            Self::SetBeforeSendHook => "MsgSetBeforeSendHook",
         }
     }
 }
