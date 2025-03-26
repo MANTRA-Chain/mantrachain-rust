@@ -77,7 +77,7 @@ fn extract_module_version(
             let is_valid_timestamp = timestamp.len() >= 14
                 && timestamp[timestamp.len() - 14..]
                     .chars()
-                    .all(|c| c.is_digit(10));
+                    .all(|c| c.is_ascii_digit());
             let is_valid_commit =
                 commit_hash.len() == 12 && commit_hash.chars().all(|c| c.is_alphanumeric());
 
