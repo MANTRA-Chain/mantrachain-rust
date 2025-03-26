@@ -37,4 +37,3 @@
 - [ ] I updated/added relevant documentation.
 - [ ] The code is formatted properly `just fmt`.
 - [ ] Clippy doesn't report any issues `just lint`.
-- [ ] I have regenerated the schemas if needed with `just schemas`.
