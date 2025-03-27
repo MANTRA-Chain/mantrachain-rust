@@ -1,8 +1,8 @@
-use ::serde::{Deserialize, Deserializer, Serialize, Serializer};
 use chrono::{DateTime, Utc};
 use cosmwasm_std::StdResult;
 use serde::de;
 use serde::de::Visitor;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use std::fmt;
 use std::str::FromStr;
@@ -45,7 +45,7 @@ impl<'de> Deserialize<'de> for Timestamp {
     {
         struct TimestampVisitor;
 
-        impl<'de> Visitor<'de> for TimestampVisitor {
+        impl Visitor<'_> for TimestampVisitor {
             type Value = Timestamp;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -114,7 +114,7 @@ impl<'de> Deserialize<'de> for Duration {
     {
         struct DurationVisitor;
 
-        impl<'de> Visitor<'de> for DurationVisitor {
+        impl Visitor<'_> for DurationVisitor {
             type Value = Duration;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
