@@ -2,16 +2,16 @@ use anyhow::Result as AnyResult;
 use cosmwasm_schema::serde::de::DeserializeOwned;
 use cosmwasm_std::{
     coins, to_json_binary, Addr, AnyMsg, Api, BankMsg, Binary, BlockInfo, CustomMsg, CustomQuery,
-    MsgResponse, Querier, Storage, SubMsgResponse,
+    GrpcQuery, MsgResponse, Querier, Storage, SubMsgResponse,
 };
 use cw_multi_test::{AppResponse, BankSudo, CosmosRouter, Stargate};
-use osmosis_std::types::cosmos::base::v1beta1::Coin;
-use osmosis_std::types::osmosis::tokenfactory::v1beta1::{Params, QueryParamsResponse};
 
 use mantra_dex_std::tokenfactory::burn::MsgBurn;
 use mantra_dex_std::tokenfactory::common::EncodeMessage;
 use mantra_dex_std::tokenfactory::create_denom::{MsgCreateDenom, MsgCreateDenomResponse};
 use mantra_dex_std::tokenfactory::mint::MsgMint;
+use mantra_dex_std::tokenfactory::responses::{Params, QueryParamsResponse};
+use mantrachain_std::types::cosmos::base::v1beta1::Coin;
 
 pub struct StargateMock {
     pub fees: Vec<cosmwasm_std::Coin>,
@@ -162,6 +162,41 @@ impl Stargate for StargateMock {
                 })?)
             }
             _ => Err(anyhow::anyhow!("Unexpected stargate query request {path}",)),
+        }
+    }
+
+    fn query_grpc(
+        &self,
+        _api: &dyn Api,
+        _storage: &dyn Storage,
+        _querier: &dyn Querier,
+        _block: &BlockInfo,
+        request: GrpcQuery,
+    ) -> AnyResult<Binary> {
+        let path = request.path.clone();
+
+        let mut fees: Vec<Coin> = vec![];
+        for fee in self.fees.iter() {
+            fees.push(Coin {
+                denom: fee.denom.clone(),
+                amount: fee.amount.u128().to_string(),
+            });
+        }
+
+        match path.as_str() {
+            "/osmosis.tokenfactory.v1beta1.Query/Params" => {
+                let params_response = QueryParamsResponse {
+                    params: Some(Params {
+                        denom_creation_fee: fees,
+                        denom_creation_gas_consume: 0,
+                    }),
+                };
+
+                // Use EncodeMessage trait to properly encode the response as protobuf
+                let encoded = QueryParamsResponse::encode(params_response);
+                Ok(Binary::from(encoded))
+            }
+            _ => Err(anyhow::anyhow!("Unexpected grpc query request {path}",)),
         }
     }
 }

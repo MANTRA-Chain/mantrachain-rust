@@ -39,7 +39,7 @@ pub fn generate() {
     if tmp_repos_dir.exists() {
         fs::remove_dir_all(tmp_repos_dir.clone()).unwrap();
     }
-    
+
     git::clone_repo(MANTRACHAIN_REPO, MANTRACHAIN_DIR, MANTRACHAIN_REV);
 
     // Extract versions from go.mod with specific module types
@@ -79,10 +79,7 @@ pub fn generate() {
         out_dir,
         tmp_build_dir,
         mantrachain_project,
-        vec![
-            cosmos_project,
-            connect_project,
-        ],
+        vec![cosmos_project, connect_project],
     );
 
     mantrachain_code_generator.generate();

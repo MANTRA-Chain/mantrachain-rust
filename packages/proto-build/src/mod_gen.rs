@@ -45,10 +45,10 @@ fn recur_gen_mod(for_dir: &Path, start_dir: &Path, paths: Vec<Vec<String>>, incl
     // base case
     if uniq_keys.is_empty() {
         let from = start_dir.join(format!("{}.rs", include_file.replace('/', ".")));
-        let to = for_dir
-            .parent()
-            .unwrap()
-            .join(format!("{}.rs", include_file.split('.').last().unwrap()));
+        let to = for_dir.parent().unwrap().join(format!(
+            "{}.rs",
+            include_file.split('.').next_back().unwrap()
+        ));
         fs::rename(from, to).unwrap();
     } else {
         let ts = uniq_keys.iter().map(|k| {

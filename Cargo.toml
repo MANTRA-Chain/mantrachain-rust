@@ -13,7 +13,8 @@ license = "MPL-2.0"
 repository = "https://github.com/MANTRA-Chain/mantrachain-rust"
 
 [workspace.dependencies]
-mantra-dex-std = { version = "2.1.5" }
+mantra-dex-std  = { path = "./packages/mantra-dex-std" }
+mantrachain-std = { path = "./packages/mantrachain-std" }
 
 anybuf             = { version = "0.5.2" }
 anyhow             = { version = "1.0.95" }
@@ -26,7 +27,6 @@ cw-storage-plus    = { version = "2.0.0" }
 heck               = { version = "0.4.0" }
 itertools          = { version = "0.10.3" }
 log                = { version = "0.4.17" }
-osmosis-std        = { version = "0.27.0" }
 neutron-std-derive = { git = "https://github.com/neutron-org/neutron-std", rev = "v5.1.2" }
 pretty_env_logger  = { version = "0.4.0" }
 prettyplease       = { version = "0.1.16" }
