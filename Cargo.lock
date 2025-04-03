@@ -1236,6 +1236,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mantra-rwa-modules"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-std",
+ "sha2",
+ "thiserror 2.0.12",
+]
+
+[[package]]
 name = "mantra-utils"
 version = "1.1.1"
 dependencies = [
