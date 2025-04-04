@@ -5,10 +5,7 @@ pub fn validate_addr_or_default(deps: &Deps, unvalidated: Option<String>, defaul
     unvalidated
         .map_or_else(
             || Some(default.clone()),
-            |recv| match deps.api.addr_validate(&recv) {
-                Ok(validated) => Some(validated),
-                Err(_) => None,
-            },
+            |recv| deps.api.addr_validate(&recv).ok(),
         )
         .unwrap_or(default)
 }

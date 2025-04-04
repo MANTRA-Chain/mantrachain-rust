@@ -130,7 +130,7 @@ impl CodeGenerator {
                 if project.name == "cosmos" || project.name == "ics23" || project.name == "admin" {
                     self.root.join(&project.project_dir).join("proto")
                 } else {
-                    WalkDir::new(&self.root.join(&project.project_dir))
+                    WalkDir::new(self.root.join(&project.project_dir))
                         .into_iter()
                         .filter_map(|e| e.ok())
                         .find(|e| {

@@ -526,13 +526,13 @@ fn get_query_attr(
 
     let method = service?.method.iter().find(|m| {
         let input_type = m.input_type.clone().unwrap();
-        let input_type = input_type.split('.').last().unwrap();
+        let input_type = input_type.split('.').next_back().unwrap();
         *ident == input_type.to_upper_camel_case()
     });
 
     let method_name = method?.name.clone().unwrap();
     let response_type = method?.output_type.clone().unwrap();
-    let response_type = response_type.split('.').last().unwrap();
+    let response_type = response_type.split('.').next_back().unwrap();
     let response_type = format_ident!("{}", response_type.to_upper_camel_case());
 
     let path = format!("/{}.Query/{}", package, method_name);
@@ -732,8 +732,8 @@ pub fn append_querier(
         }
 
         let name = format_ident!("{}", method_desc.name.unwrap().as_str().to_snake_case());
-        let req_type = format_ident!("{}", method_desc.input_type.unwrap().split('.').last().unwrap().to_string().to_upper_camel_case());
-        let res_type = format_ident!("{}", method_desc.output_type.unwrap().split('.').last().unwrap().to_string().to_upper_camel_case());
+        let req_type = format_ident!("{}", method_desc.input_type.unwrap().split('.').next_back().unwrap().to_string().to_upper_camel_case());
+        let res_type = format_ident!("{}", method_desc.output_type.unwrap().split('.').next_back().unwrap().to_string().to_upper_camel_case());
 
         let allow_too_many_arguments_attr = if TOO_MANY_ARGUMENTS_FUNCS.iter().any(|&i| name == i) {
             quote!(#[allow(clippy::too_many_arguments)])

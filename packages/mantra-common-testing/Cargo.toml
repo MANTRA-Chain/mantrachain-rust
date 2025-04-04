@@ -7,7 +7,7 @@ keywords             = ["mantrachain", "mantra", "testing", "cosmwasm"]
 license.workspace    = true
 name                 = "mantra-common-testing"
 repository.workspace = true
-version              = "1.1.3"
+version              = "1.2.0"
 
 [dependencies]
 anyhow.workspace          = true
@@ -15,6 +15,6 @@ cosmwasm-schema.workspace = true
 cosmwasm-std.workspace    = true
 cw-multi-test.workspace   = true
 mantra-dex-std.workspace  = true
-osmosis-std.workspace     = true
+mantrachain-std.workspace = true
 schemars.workspace        = true
 serde.workspace           = true

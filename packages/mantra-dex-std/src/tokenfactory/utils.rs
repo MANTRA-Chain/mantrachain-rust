@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use cosmwasm_std::{Deps, StdResult, Uint128};
-use osmosis_std::types::osmosis::tokenfactory::v1beta1::TokenfactoryQuerier;
+use mantrachain_std::types::osmosis::tokenfactory::v1beta1::TokenfactoryQuerier;
 
 /// Gets the factory denom creation fee
 pub fn get_factory_denom_creation_fee(deps: Deps) -> StdResult<Vec<cosmwasm_std::Coin>> {

@@ -6,18 +6,17 @@ homepage.workspace   = true
 license.workspace    = true
 name                 = "mantrachain-std"
 repository.workspace = true
-version              = "0.1.0"
+version              = "0.2.0"
 
 [dependencies]
-chrono.workspace              = true
-cosmwasm-std.workspace        = true
-osmosis-std.workspace         = true
-neutron-std-derive.workspace  = true
-prost                         = { workspace = true, default-features = true }
-prost-types                   = { workspace = true, default-features = true }
-protobuf.workspace            = true
-schemars.workspace            = true
-serde-json-wasm.workspace     = true
+chrono.workspace             = true
+cosmwasm-std.workspace       = true
+neutron-std-derive.workspace = true
+prost                        = { workspace = true, default-features = true }
+prost-types                  = { workspace = true, default-features = true }
+protobuf.workspace           = true
+schemars.workspace           = true
+serde-json-wasm.workspace    = true
 
 # for query
 serde.workspace          = true
