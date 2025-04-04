@@ -1,28 +1,51 @@
 use crate::staking::error::StakingError;
 use crate::staking::native::DelegationStrategy;
 use crate::staking::MIN_VALIDATORS;
-use cosmwasm_std::{ensure, Addr, BlockInfo, Deps, DepsMut, Env, MessageInfo};
+use cosmwasm_std::{ensure, Addr, BlockInfo, Deps, Env, Validator};
 use sha2::{Digest, Sha256};
 
 /// Returns a list of validators based on the provided delegation strategy.
+///
+/// # Arguments
+/// * `deps` - The dependencies for the contract.
+/// * `env` - The environment for the contract.
+/// * `sender` - The address of the sender.
+/// * `delegation_strategy` - The strategy for selecting validators.
+///
+/// # Returns
+/// A vector of validator addresses.
+///
+/// # Example
+/// ```rust
+/// use crate::staking::helpers::get_validators;
+/// use cosmwasm_std::{Addr, Deps, Env};
+/// use crate::staking::native::DelegationStrategy;
+/// use crate::staking::error::StakingError;
+///
+/// let delegation_strategy = DelegationStrategy::Pseudorandom();
+/// let validators = get_validators(deps, &env, &sender, delegation_strategy)?;
+/// assert_eq!(validators.len(), 4);
+/// ```
 pub(crate) fn get_validators(
     deps: Deps,
     env: &Env,
     sender: &Addr,
     delegation_strategy: DelegationStrategy,
 ) -> Result<Vec<String>, StakingError> {
+    //todo check if it makes sense to check the validator size if the active_validators len is very small...
+    let active_validators = deps.querier.query_all_validators()?;
+
     let validators = match delegation_strategy {
         DelegationStrategy::Pseudorandom(n) => {
             let n = n.unwrap_or(MIN_VALIDATORS);
             check_validators_size(n)?;
 
-            pick_pseudorandom_validators(deps, &env.block, &sender, n)?
+            select_pseudorandom_validators(deps, &env.block, &sender, n, &active_validators)?
         }
         DelegationStrategy::TopN(n) => {
             check_validators_size(n)?;
 
-            deps.querier
-                .query_all_validators()?
+            active_validators
                 .iter()
                 .take(n)
                 .map(|v| v.address.clone())
@@ -31,8 +54,7 @@ pub(crate) fn get_validators(
         DelegationStrategy::BottomN(n) => {
             check_validators_size(n)?;
 
-            deps.querier
-                .query_all_validators()?
+            active_validators
                 .iter()
                 .rev()
                 .take(n)
@@ -48,6 +70,12 @@ pub(crate) fn get_validators(
 }
 
 /// Checks if the number of validators is valid.
+///
+/// # Arguments
+/// * `n` - The number of validators.
+///
+/// # Returns
+/// `()`, if the number of validators is valid.
 #[inline]
 fn check_validators_size(n: usize) -> Result<(), StakingError> {
     ensure!(
@@ -61,14 +89,35 @@ fn check_validators_size(n: usize) -> Result<(), StakingError> {
 }
 
 /// Pseudorandomly selects a specified number of validators from the active validator set.
-fn pick_pseudorandom_validators(
+///
+/// # Arguments
+/// * `deps` - The dependencies for the contract.
+/// * `block` - The block information.
+/// * `sender` - The address of the sender.
+/// * `num_validators` - The number of validators to select.
+///
+/// # Returns
+/// A vector of selected validator addresses.
+///
+/// # Example
+/// ```rust
+/// use crate::staking::helpers::select_pseudorandom_validators;
+/// use cosmwasm_std::{Addr, Env, Deps};
+/// use crate::staking::error::StakingError;
+///
+/// let sender = Addr::unchecked("sender");
+/// let num_validators = 4;
+/// let selected_validators = select_pseudorandom_validators(deps, &env.block, &sender, num_validators)?;
+/// assert_eq!(selected_validators.len(), 4);
+/// }
+/// ```
+fn select_pseudorandom_validators(
     deps: Deps,
     block: &BlockInfo,
     sender: &Addr,
     num_validators: usize,
+    active_validators: &[Validator],
 ) -> Result<Vec<String>, StakingError> {
-    let active_validators = deps.querier.query_all_validators()?;
-
     let seed = format!("{}{}", block.height, sender);
     let mut hasher = Sha256::new();
     hasher.update(seed);
@@ -83,7 +132,8 @@ fn pick_pseudorandom_validators(
         u32::from_le_bytes(hash_bytes[start..end].try_into().unwrap())
     });
 
-    let selected_indices = &indices[..num_validators];
+    let take = indices.len().min(num_validators);
+    let selected_indices = &indices[..take];
 
     let selected_validators = selected_indices
         .iter()
