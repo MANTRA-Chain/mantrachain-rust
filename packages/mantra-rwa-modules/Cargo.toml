@@ -1,0 +1,23 @@
+[package]
+authors.workspace    = true
+description          = "CosmWasm modules for handling real world assets on MANTRA."
+edition.workspace    = true
+homepage.workspace   = true
+keywords             = ["mantrachain", "mantra", "rwa", "cosmwasm"]
+license.workspace    = true
+name                 = "mantra-rwa-modules"
+repository.workspace = true
+version              = "0.1.0"
+
+[lib]
+doctest = false # disable doc tests
+
+[features]
+staking = ["cosmwasm-std/staking"]
+vesting = []
+
+[dependencies]
+cosmwasm-schema.workspace = true
+cosmwasm-std.workspace    = true
+sha2.workspace            = true
+thiserror.workspace       = true
