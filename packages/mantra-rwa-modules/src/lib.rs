@@ -1,6 +1,6 @@
 #![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/README.md"))]
 
 #[cfg(feature = "staking")]
-mod staking;
+pub mod staking;
 #[cfg(feature = "vesting")]
-mod vesting;
+pub mod vesting;
