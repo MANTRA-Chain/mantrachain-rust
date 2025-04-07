@@ -78,6 +78,14 @@ pub(crate) fn get_validators(
 /// `()`, if the number of validators is valid.
 #[inline]
 fn check_validators_size(validators_n: usize, n: usize) -> Result<(), StakingError> {
+    ensure!(
+        n <= validators_n,
+        StakingError::NotEnoughValidators {
+            min_validators: n,
+            provided_validators: validators_n
+        }
+    );
+
     if validators_n >= MIN_VALIDATORS {
         ensure!(
             n >= MIN_VALIDATORS,
@@ -110,7 +118,8 @@ fn check_validators_size(validators_n: usize, n: usize) -> Result<(), StakingErr
 ///
 /// let sender = Addr::unchecked("sender");
 /// let num_validators = 4;
-/// let selected_validators = select_pseudorandom_validators(deps, &env.block, &sender, num_validators)?;
+/// let active_validators = deps.querier.query_all_validators()?;
+/// let selected_validators = select_pseudorandom_validators(&env.block, &sender, num_validators, &active_validators)?;
 /// assert_eq!(selected_validators.len(), 4);
 /// }
 /// ```

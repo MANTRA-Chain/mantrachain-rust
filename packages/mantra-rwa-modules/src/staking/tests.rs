@@ -125,15 +125,24 @@ fn test_get_pseudorandom_validators() {
     assert_eq!(validators_2.len(), 4);
     assert_ne!(validators_1_alice, validators_2);
 
-    let validators_3 = get_validators(
+    let err = get_validators(
         deps.as_ref(),
         &env,
         &alice,
         DelegationStrategy::Pseudorandom(Some(10)),
     )
-    .unwrap();
-    // only 5 validators are available
-    assert_eq!(validators_3.len(), 5);
+    .unwrap_err();
+
+    match err {
+        StakingError::NotEnoughValidators {
+            min_validators,
+            provided_validators,
+        } => {
+            assert_eq!(min_validators, 10);
+            assert_eq!(provided_validators, 5);
+        }
+        _ => panic!("Expected NotEnoughValidators error"),
+    }
 
     let err = get_validators(
         deps.as_ref(),
@@ -165,35 +174,26 @@ fn test_get_pseudorandom_many_validators() {
         deps.as_ref(),
         &env,
         &sender,
-        DelegationStrategy::Pseudorandom(Some(50)),
+        DelegationStrategy::Pseudorandom(Some(100)),
     )
     .unwrap();
-    assert_eq!(validators.len(), 50);
-
-    let validators = get_validators(
-        deps.as_ref(),
-        &env,
-        &sender,
-        DelegationStrategy::Pseudorandom(Some(105)),
-    )
-    .unwrap();
-    // only 100 validators are available
     assert_eq!(validators.len(), 100);
 
     let err = get_validators(
         deps.as_ref(),
         &env,
         &sender,
-        DelegationStrategy::Pseudorandom(Some(MIN_VALIDATORS - 1)),
+        DelegationStrategy::Pseudorandom(Some(105)),
     )
     .unwrap_err();
+
     match err {
         StakingError::NotEnoughValidators {
             min_validators,
             provided_validators,
         } => {
-            assert_eq!(min_validators, MIN_VALIDATORS);
-            assert_eq!(provided_validators, MIN_VALIDATORS - 1);
+            assert_eq!(min_validators, 105);
+            assert_eq!(provided_validators, 100);
         }
         _ => panic!("Expected NotEnoughValidators error"),
     }
@@ -209,7 +209,8 @@ fn test_get_topn_validators() {
     let validators_1 =
         get_validators(deps.as_ref(), &env, &sender, DelegationStrategy::TopN(4)).unwrap();
     let validators_2 =
-        get_validators(deps.as_ref(), &env, &sender, DelegationStrategy::TopN(10)).unwrap();
+        get_validators(deps.as_ref(), &env, &sender, DelegationStrategy::TopN(5)).unwrap();
+
     assert_eq!(
         validators_1,
         mocked_validators_addresses(deps.api)
@@ -244,6 +245,20 @@ fn test_get_topn_validators() {
         }
         _ => panic!("Expected NotEnoughValidators error"),
     }
+
+    let err =
+        get_validators(deps.as_ref(), &env, &sender, DelegationStrategy::TopN(10)).unwrap_err();
+
+    match err {
+        StakingError::NotEnoughValidators {
+            min_validators,
+            provided_validators,
+        } => {
+            assert_eq!(min_validators, 10);
+            assert_eq!(provided_validators, 5);
+        }
+        _ => panic!("Expected NotEnoughValidators error"),
+    }
 }
 
 #[test]
@@ -255,13 +270,8 @@ fn test_get_bottomn_validators() {
 
     let validators_1 =
         get_validators(deps.as_ref(), &env, &sender, DelegationStrategy::BottomN(4)).unwrap();
-    let validators_2 = get_validators(
-        deps.as_ref(),
-        &env,
-        &sender,
-        DelegationStrategy::BottomN(10),
-    )
-    .unwrap();
+    let validators_2 =
+        get_validators(deps.as_ref(), &env, &sender, DelegationStrategy::BottomN(5)).unwrap();
     assert_eq!(
         validators_1,
         mocked_validators_addresses(deps.api)
@@ -288,6 +298,7 @@ fn test_get_bottomn_validators() {
         DelegationStrategy::BottomN(MIN_VALIDATORS - 1),
     )
     .unwrap_err();
+
     match err {
         StakingError::NotEnoughValidators {
             min_validators,
@@ -295,6 +306,25 @@ fn test_get_bottomn_validators() {
         } => {
             assert_eq!(min_validators, MIN_VALIDATORS);
             assert_eq!(provided_validators, MIN_VALIDATORS - 1);
+        }
+        _ => panic!("Expected NotEnoughValidators error"),
+    }
+
+    let err = get_validators(
+        deps.as_ref(),
+        &env,
+        &sender,
+        DelegationStrategy::BottomN(10),
+    )
+    .unwrap_err();
+
+    match err {
+        StakingError::NotEnoughValidators {
+            min_validators,
+            provided_validators,
+        } => {
+            assert_eq!(min_validators, 10);
+            assert_eq!(provided_validators, 5);
         }
         _ => panic!("Expected NotEnoughValidators error"),
     }
