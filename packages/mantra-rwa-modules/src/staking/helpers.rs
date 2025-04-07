@@ -120,26 +120,33 @@ fn select_pseudorandom_validators(
     num_validators: usize,
     active_validators: &[Validator],
 ) -> Result<Vec<String>, StakingError> {
-    let seed = format!("{}{}", block.height, sender);
+    let seed_input = format!("{}{}{}", block.height, block.time.nanos(), sender.as_str());
     let mut hasher = Sha256::new();
-    hasher.update(seed);
-
+    hasher.update(seed_input);
     let hash = hasher.finalize();
-    let hash_bytes: Vec<u8> = hash.to_vec();
 
+    let mut seed = u64::from_le_bytes(hash[0..8].try_into().unwrap());
+
+    // Simple deterministic RNG based on xorshift
+    let mut next_u64 = move || {
+        seed ^= seed >> 12;
+        seed ^= seed << 25;
+        seed ^= seed >> 27;
+        seed.wrapping_mul(0x2545F4914F6CDD1D)
+    };
+
+    // Fisher-Yates shuffle with our custom RNG
     let mut indices: Vec<usize> = (0..active_validators.len()).collect();
-    indices.sort_by_key(|&i| {
-        let start = i * 4;
-        let end = start + 4;
-        u32::from_le_bytes(hash_bytes[start..end].try_into().unwrap())
-    });
+    for i in (1..indices.len()).rev() {
+        let j = next_u64() as usize % (i + 1);
+        indices.swap(i, j);
+    }
 
-    let take = indices.len().min(num_validators);
-    let selected_indices = &indices[..take];
-
-    let selected_validators = selected_indices
-        .iter()
-        .map(|&i| active_validators[i].address.clone())
+    let take = active_validators.len().min(num_validators);
+    let selected_validators = indices
+        .into_iter()
+        .take(take)
+        .map(|i| active_validators[i].address.clone())
         .collect();
 
     Ok(selected_validators)

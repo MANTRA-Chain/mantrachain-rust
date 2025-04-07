@@ -41,6 +41,12 @@ fn mock_validators(deps: &mut OwnedDeps<MockStorage, MockApi, MockQuerier>) {
         .update("uom", &get_validator_list(deps.api, 5), &[]);
 }
 
+fn mock_many_validators(deps: &mut OwnedDeps<MockStorage, MockApi, MockQuerier>) {
+    deps.querier
+        .staking
+        .update("uom", &get_validator_list(deps.api, 100), &[]);
+}
+
 fn mock_staking_rewards(deps: &mut OwnedDeps<MockStorage, MockApi, MockQuerier>, sender: &Addr) {
     deps.querier.distribution.set_validators(
         sender.to_string(),
@@ -85,38 +91,94 @@ fn test_get_pseudorandom_validators() {
     let mut deps = mock_dependencies();
     mock_validators(&mut deps);
     let mut env = mock_env();
-    let sender = deps.api.addr_make("sender");
+    let alice = deps.api.addr_make("alice");
+    let bob = deps.api.addr_make("bob");
 
-    let validators_1 = get_validators(
+    let validators_1_alice = get_validators(
         deps.as_ref(),
         &env,
-        &sender,
+        &alice,
         DelegationStrategy::Pseudorandom(Some(4)),
     )
     .unwrap();
+
+    let validators_1_bob = get_validators(
+        deps.as_ref(),
+        &env,
+        &bob,
+        DelegationStrategy::Pseudorandom(Some(4)),
+    )
+    .unwrap();
+
+    assert_ne!(validators_1_alice, validators_1_bob);
 
     env.block.height += 1000;
 
     let validators_2 = get_validators(
         deps.as_ref(),
         &env,
-        &sender,
+        &alice,
         DelegationStrategy::Pseudorandom(None),
     )
     .unwrap();
-    assert_eq!(validators_1.len(), 4);
+    assert_eq!(validators_1_alice.len(), 4);
     assert_eq!(validators_2.len(), 4);
-    assert_ne!(validators_1, validators_2);
+    assert_ne!(validators_1_alice, validators_2);
 
     let validators_3 = get_validators(
         deps.as_ref(),
         &env,
-        &sender,
+        &alice,
         DelegationStrategy::Pseudorandom(Some(10)),
     )
     .unwrap();
     // only 5 validators are available
     assert_eq!(validators_3.len(), 5);
+
+    let err = get_validators(
+        deps.as_ref(),
+        &env,
+        &alice,
+        DelegationStrategy::Pseudorandom(Some(MIN_VALIDATORS - 1)),
+    )
+    .unwrap_err();
+    match err {
+        StakingError::NotEnoughValidators {
+            min_validators,
+            provided_validators,
+        } => {
+            assert_eq!(min_validators, MIN_VALIDATORS);
+            assert_eq!(provided_validators, MIN_VALIDATORS - 1);
+        }
+        _ => panic!("Expected NotEnoughValidators error"),
+    }
+}
+
+#[test]
+fn test_get_pseudorandom_many_validators() {
+    let mut deps = mock_dependencies();
+    mock_many_validators(&mut deps);
+    let env = mock_env();
+    let sender = deps.api.addr_make("sender");
+
+    let validators = get_validators(
+        deps.as_ref(),
+        &env,
+        &sender,
+        DelegationStrategy::Pseudorandom(Some(50)),
+    )
+    .unwrap();
+    assert_eq!(validators.len(), 50);
+
+    let validators = get_validators(
+        deps.as_ref(),
+        &env,
+        &sender,
+        DelegationStrategy::Pseudorandom(Some(105)),
+    )
+    .unwrap();
+    // only 100 validators are available
+    assert_eq!(validators.len(), 100);
 
     let err = get_validators(
         deps.as_ref(),
