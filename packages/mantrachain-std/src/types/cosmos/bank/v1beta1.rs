@@ -1065,6 +1065,7 @@ impl<'a, Q: cosmwasm_std::CustomQuery> BankQuerier<'a, Q> {
     ) -> Result<QueryBalanceResponse, cosmwasm_std::StdError> {
         QueryBalanceRequest { address, denom }.query(self.querier)
     }
+    #[deprecated]
     pub fn all_balances(
         &self,
         address: ::prost::alloc::string::String,
