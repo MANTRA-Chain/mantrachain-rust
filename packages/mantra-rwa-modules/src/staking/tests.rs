@@ -2,14 +2,11 @@ use super::*;
 use crate::staking::error::StakingError;
 use crate::staking::helpers::get_validators;
 use crate::staking::native::{claim_staking_rewards, delegate, undelegate, DelegationStrategy};
-use cosmwasm_std::testing::{
-    mock_dependencies, mock_env, MockApi, MockQuerier, MockStorage, StakingQuerier,
-};
+use cosmwasm_std::testing::{mock_dependencies, mock_env, MockApi, MockQuerier, MockStorage};
 use cosmwasm_std::{
-    coin, coins, Addr, BankMsg, CosmosMsg, DecCoin, Decimal256, DistributionMsg, FullDelegation,
-    OwnedDeps, StakingMsg, Uint256, Validator, WasmMsg,
+    coin, coins, Addr, Attribute, BankMsg, CosmosMsg, DecCoin, Decimal256, DistributionMsg,
+    FullDelegation, OwnedDeps, StakingMsg, Validator,
 };
-use std::str::FromStr;
 
 fn get_delegations(api: &MockApi, sender: &Addr, count: usize) -> Vec<FullDelegation> {
     (1..=count)
@@ -314,7 +311,7 @@ fn test_delegate() {
     let to_delegate = coin(1000, "uom");
     let delegation_strategy = DelegationStrategy::TopN(4);
 
-    let delegate_messages = delegate(
+    let (delegate_messages, attributes) = delegate(
         deps.as_ref(),
         &env,
         &sender,
@@ -343,11 +340,49 @@ fn test_delegate() {
             })
         ]
     );
+    assert_eq!(
+        attributes,
+        vec![
+            Attribute::new("action", "delegate"),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator1").to_string(),
+                    coin(250u128, "uom")
+                ),
+            ),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator2").to_string(),
+                    coin(250u128, "uom")
+                ),
+            ),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator3").to_string(),
+                    coin(250u128, "uom")
+                ),
+            ),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator4").to_string(),
+                    coin(250u128, "uom")
+                ),
+            ),
+        ]
+    );
 
     let to_delegate = coin(125, "uom");
     let delegation_strategy = DelegationStrategy::TopN(4);
 
-    let delegate_messages = delegate(
+    let (delegate_messages, attributes) = delegate(
         deps.as_ref(),
         &env,
         &sender,
@@ -377,14 +412,53 @@ fn test_delegate() {
                 amount: coin(32u128, "uom"),
             })
         ]
-    )
+    );
+    assert_eq!(
+        attributes,
+        vec![
+            Attribute::new("action", "delegate"),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator1").to_string(),
+                    coin(31u128, "uom")
+                ),
+            ),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator2").to_string(),
+                    coin(31u128, "uom")
+                ),
+            ),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator3").to_string(),
+                    coin(31u128, "uom")
+                ),
+            ),
+            Attribute::new(
+                "delegation",
+                &format!(
+                    "validator: {:?} -> {:?}",
+                    deps.api.addr_make("validator4").to_string(),
+                    coin(32u128, "uom")
+                ),
+            ),
+        ]
+    );
 }
 #[test]
 fn test_undelegate() {
-    let mut deps = mock_dependencies();
+    let deps = mock_dependencies();
     let amount = coin(1000, "uom");
 
-    let undelegate_msg = undelegate(deps.api.addr_make("validator1").as_str(), amount).unwrap();
+    let (undelegate_msg, attributes) =
+        undelegate(deps.api.addr_make("validator1").as_str(), amount.clone()).unwrap();
 
     assert_eq!(
         undelegate_msg,
@@ -392,6 +466,14 @@ fn test_undelegate() {
             validator: deps.api.addr_make("validator1").to_string(),
             amount: coin(1000u128, "uom"),
         })
+    );
+    assert_eq!(
+        attributes,
+        vec![
+            Attribute::new("action", "undelegate"),
+            Attribute::new("validator", &deps.api.addr_make("validator1").to_string()),
+            Attribute::new("amount", &amount.to_string()),
+        ]
     );
 }
 
@@ -409,7 +491,8 @@ fn test_claim_staking_rewards() {
 
     mock_staking_rewards(&mut deps, &sender);
 
-    let claim_messages = claim_staking_rewards(deps.as_ref(), sender.as_str(), None).unwrap();
+    let (claim_messages, attributes) =
+        claim_staking_rewards(deps.as_ref(), sender.as_str(), None).unwrap();
     assert_eq!(
         claim_messages,
         vec![
@@ -427,8 +510,23 @@ fn test_claim_staking_rewards() {
             }),
         ]
     );
+    {
+        assert_eq!(
+            attributes[0],
+            Attribute::new("action", "claim_staking_rewards")
+        );
+        assert_eq!(attributes[1].key, "validator");
+        assert_eq!(attributes[2], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[3].key, "validator");
+        assert_eq!(attributes[4], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[5].key, "validator");
+        assert_eq!(attributes[6], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[7].key, "validator");
+        assert_eq!(attributes[8], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[9], Attribute::new("total_reward", "4uom"));
+    }
 
-    let claim_messages =
+    let (claim_messages, attributes) =
         claim_staking_rewards(deps.as_ref(), sender.as_str(), Some(recipient.to_string())).unwrap();
     assert_eq!(
         claim_messages,
@@ -451,4 +549,20 @@ fn test_claim_staking_rewards() {
             }),
         ]
     );
+    {
+        assert_eq!(
+            attributes[0],
+            Attribute::new("action", "claim_staking_rewards")
+        );
+        assert_eq!(attributes[1].key, "validator");
+        assert_eq!(attributes[2], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[3].key, "validator");
+        assert_eq!(attributes[4], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[5].key, "validator");
+        assert_eq!(attributes[6], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[7].key, "validator");
+        assert_eq!(attributes[8], Attribute::new("reward", "1uom"));
+        assert_eq!(attributes[9], Attribute::new("total_reward", "4uom"));
+        assert_eq!(attributes[10], Attribute::new("recipient", &recipient));
+    }
 }

@@ -1,9 +1,9 @@
 use crate::staking::error::StakingError;
-use crate::staking::{helpers, MIN_VALIDATORS};
+use crate::staking::helpers;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{
-    coin, ensure, Addr, BankMsg, Coin, CosmosMsg, Decimal256, Deps, DistributionMsg, Env,
-    StakingMsg, Uint128, Uint256,
+    coin, coins, ensure, Addr, Attribute, BankMsg, Coin, CosmosMsg, Decimal256, Deps,
+    DistributionMsg, Env, StakingMsg, Uint128,
 };
 use std::fmt::Display;
 
@@ -34,9 +34,7 @@ impl Display for DelegationStrategy {
 /// Provides cosmos messages for delegating native tokens to validators based on the provided
 /// delegation strategy.
 ///
-///
 /// # Arguments
-///
 /// * `deps` - The dependencies for the contract.
 /// * `env` - The environment for the contract.
 /// * `sender` - The address of the sender.
@@ -44,32 +42,33 @@ impl Display for DelegationStrategy {
 /// * `delegation_strategy` - The strategy for selecting validators.
 ///
 /// # Returns
-///
-/// A vector of cosmos messages for delegating native tokens.
+/// A tuple with a vector of [CosmosMsg] for delegating native tokens and a vector of [Attribute].
 ///
 /// # Example
 /// ```rust
-/// use crate::staking::native::delegate;
-/// use cosmwasm_std::{coin, Addr, CosmosMsg, Deps, Env};
-/// use crate::staking::native::{DelegationStrategy, delegate};
 /// use crate::staking::error::StakingError;
+/// use crate::staking::native::delegate;
+/// use crate::staking::native::{delegate, DelegationStrategy};
+/// use cosmwasm_std::{coin, Addr, Attribute, CosmosMsg, Deps, Env};
 ///
 /// let to_delegate = coin(1000, "uom");
 /// let delegation_strategy = DelegationStrategy::Pseudorandom(None);
 ///
-/// let delegate_messages: Vec<CosmosMsg> = delegate(deps, &env, &sender, to_delegate, delegation_strategy)?;
+/// let (delegate_messages, attributes): (Vec<CosmosMsg>, Vec<Attribute>) =
+///     delegate(deps, &env, &sender, to_delegate, delegation_strategy)?;
 /// assert_eq!(delegate_messages.len(), 4);
 ///
-/// Ok(Response::default().add_messages(delegate_messages))
+/// Ok(Response::default()
+///     .add_messages(delegate_messages)
+///     .add_attributes(attributes))
 /// ```
-///
 pub fn delegate(
     deps: Deps,
     env: &Env,
     sender: &Addr,
     to_delegate: Coin,
     delegation_strategy: DelegationStrategy,
-) -> Result<Vec<CosmosMsg>, StakingError> {
+) -> Result<(Vec<CosmosMsg>, Vec<Attribute>), StakingError> {
     ensure!(
         to_delegate.amount > Uint128::zero(),
         StakingError::ZeroAmount
@@ -95,6 +94,7 @@ pub fn delegate(
         .saturating_sub(amount_per_validator.checked_mul(Uint128::from(validators.len() as u128))?);
 
     let mut messages = vec![];
+    let mut attributes = vec![Attribute::new("action", "delegate")];
 
     if amount_per_validator > Uint128::zero() {
         for (index, validator) in validators.iter().enumerate() {
@@ -104,36 +104,40 @@ pub fn delegate(
                 amount_per_validator
             };
 
+            let delegation = coin(amount.u128(), bonded_denom.clone());
+
             let msg = CosmosMsg::Staking(StakingMsg::Delegate {
                 validator: validator.to_string(),
                 amount: coin(amount.u128(), bonded_denom.clone()),
             });
 
             messages.push(msg);
+            attributes.push(Attribute::new(
+                "delegation",
+                &format!("validator: {:?} -> {:?}", validator, delegation),
+            ));
         }
     }
 
-    Ok(messages)
+    Ok((messages, attributes))
 }
 
 /// Provides messages for undelegating native tokens from a validator.
 ///
 /// # Arguments
-///
-/// * `deps` - The dependencies for the contract.
 /// * `validator` - The address of the validator.
 /// * `amount` - The amount of tokens to undelegate.
 ///
 /// # Returns
-///
-/// A cosmos message for undelegating native tokens.
+/// A tuple with a [CosmosMsg] for undelegating native tokens and a vector of [Attribute].
 ///
 /// # Example
 /// ```rust
 /// use crate::staking::native::undelegate;
-/// use cosmwasm_std::{coin, CosmosMsg};
+/// use cosmwasm_std::{coin, Attribute, CosmosMsg};
 ///
-/// let undelegate_message: CosmosMsg = undelegate(deps, "validator_address", coin(1000, "uom"))?;
+/// let (undelegate_message, attributes): (Vec<CosmosMsg>, Vec<Attribute>) =
+///     undelegate(deps, "validator_address", coin(1000, "uom"))?;
 /// assert_eq!(
 ///     undelegate_message,
 ///     CosmosMsg::Staking(StakingMsg::Undelegate {
@@ -141,12 +145,28 @@ pub fn delegate(
 ///         amount: coin(1000, "uom"),
 ///     })
 /// );
+///
+/// Ok(Response::default()
+///     .add_message(undelegate_message)
+///     .add_attributes(attributes))
 /// ```
-pub fn undelegate(validator: &str, amount: Coin) -> Result<CosmosMsg, StakingError> {
-    Ok(CosmosMsg::Staking(StakingMsg::Undelegate {
-        validator: validator.to_string(),
-        amount,
-    }))
+pub fn undelegate(
+    validator: &str,
+    amount: Coin,
+) -> Result<(CosmosMsg, Vec<Attribute>), StakingError> {
+    let attributes = vec![
+        Attribute::new("action", "undelegate"),
+        Attribute::new("validator", validator),
+        Attribute::new("amount", &amount.to_string()),
+    ];
+
+    Ok((
+        CosmosMsg::Staking(StakingMsg::Undelegate {
+            validator: validator.to_string(),
+            amount,
+        }),
+        attributes,
+    ))
 }
 
 /// Claims staking rewards from all validators.
@@ -158,29 +178,30 @@ pub fn undelegate(validator: &str, amount: Coin) -> Result<CosmosMsg, StakingErr
 /// the rewards won't be sent anywhere, only claimed.
 ///
 /// # Returns
-///
-/// A vector of cosmos messages for claiming staking rewards.
+/// A tuple with a vector of [CosmosMsg] for claiming staking rewards and a vector of [Attribute].
 ///
 /// # Example
-///
 /// ```rust
 /// use crate::staking::native::claim_staking_rewards;
-/// use cosmwasm_std::{coin, CosmosMsg};
+/// use cosmwasm_std::{coin, Attribute, CosmosMsg};
 ///
-/// let claim_messages: Vec<CosmosMsg> = claim_staking_rewards(deps, "delegator_address", Some("recipient_address"))?;
+/// let (claim_messages, attributes): (Vec<CosmosMsg>, Vec<Attribute>) =
+///     claim_staking_rewards(deps, "delegator_address", Some("recipient_address"))?;
 /// assert_eq!(claim_messages.len(), 2);
 ///
-/// Ok(Response::default().add_messages(claim_messages))
+/// Ok(Response::default()
+///     .add_messages(claim_messages)
+///     .add_attributes(attributes))
 /// ```
 pub fn claim_staking_rewards(
     deps: Deps,
     delegator: &str,
     recipient: Option<String>,
-) -> Result<Vec<CosmosMsg>, StakingError> {
-    let rewards = deps.querier.query_delegation_total_rewards(delegator)?;
+) -> Result<(Vec<CosmosMsg>, Vec<Attribute>), StakingError> {
+    let total_rewards = deps.querier.query_delegation_total_rewards(delegator)?;
 
     ensure!(
-        !rewards.total.is_empty() && rewards.total[0].amount > Decimal256::zero(),
+        !total_rewards.total.is_empty() && total_rewards.total[0].amount > Decimal256::zero(),
         StakingError::NothingToClaim
     );
 
@@ -193,11 +214,8 @@ pub fn claim_staking_rewards(
 
     let mut messages = vec![];
 
-    println!(">>> rewards = {:?}", rewards);
-    println!(">>> delegations = {:?}", delegations);
-
     ensure!(
-        rewards.rewards.len() == delegations.len(),
+        total_rewards.rewards.len() == delegations.len(),
         StakingError::NothingToClaim
     );
 
@@ -206,27 +224,40 @@ pub fn claim_staking_rewards(
         messages.push(msg);
     }
 
-    if let Some(recipient) = recipient {
-        for reward in rewards.total {
-            //todo testing this on chain, we can see that sometimes the value being sent
-            // to the recipient is 1uom above the actual value, which makes the tx fail.
-            // doesn't happen always, investigate further when it happens and how to mitigate it
-            // ideally, we can do this without a callback to get the total amount of rewards claimed.
-            // perhaps see how this is being handled (Decimal256) at the chain level.
-            let amount: Uint128 = reward.amount.to_uint_floor().try_into()?;
+    let mut attributes = vec![Attribute::new("action", "claim_staking_rewards")];
 
-            if amount == Uint128::zero() {
-                continue;
-            }
+    let bonded_denom = deps.querier.query_bonded_denom()?;
+    let mut total_amount = Uint128::zero();
+    // do not use `total_rewards.total` but the individual rewards instead, as it can provide a
+    // wrong value when converting to Uint when the sum of the individual rewards decimals round up.
+    for r in total_rewards.rewards {
+        attributes.push(Attribute::new("validator", &r.validator_address));
+        for reward in r.reward {
+            let amount: Uint128 = reward.amount.to_uint_floor().try_into()?;
+            total_amount = total_amount.checked_add(amount)?;
+            attributes.push(Attribute::new(
+                "reward",
+                &format!("{}{}", amount, bonded_denom),
+            ));
+        }
+    }
+
+    attributes.push(Attribute::new(
+        "total_reward",
+        &format!("{}{}", total_amount, bonded_denom),
+    ));
+
+    if let Some(recipient) = recipient {
+        if total_amount > Uint128::zero() {
+            attributes.push(Attribute::new("recipient", &recipient));
 
             let msg = CosmosMsg::Bank(BankMsg::Send {
                 to_address: recipient.clone(),
-                amount: vec![coin(amount.u128(), reward.denom.to_string())],
+                amount: coins(total_amount.u128(), bonded_denom),
             });
-
             messages.push(msg);
         }
     }
 
-    Ok(messages)
+    Ok((messages, attributes))
 }

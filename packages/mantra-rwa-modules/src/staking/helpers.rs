@@ -17,10 +17,10 @@ use sha2::{Digest, Sha256};
 ///
 /// # Example
 /// ```rust
-/// use crate::staking::helpers::get_validators;
-/// use cosmwasm_std::{Addr, Deps, Env};
-/// use crate::staking::native::DelegationStrategy;
 /// use crate::staking::error::StakingError;
+/// use crate::staking::helpers::get_validators;
+/// use crate::staking::native::DelegationStrategy;
+/// use cosmwasm_std::{Addr, Deps, Env};
 ///
 /// let delegation_strategy = DelegationStrategy::Pseudorandom();
 /// let validators = get_validators(deps, &env, &sender, delegation_strategy)?;
@@ -32,18 +32,17 @@ pub(crate) fn get_validators(
     sender: &Addr,
     delegation_strategy: DelegationStrategy,
 ) -> Result<Vec<String>, StakingError> {
-    //todo check if it makes sense to check the validator size if the active_validators len is very small...
     let active_validators = deps.querier.query_all_validators()?;
 
     let validators = match delegation_strategy {
         DelegationStrategy::Pseudorandom(n) => {
             let n = n.unwrap_or(MIN_VALIDATORS);
-            check_validators_size(n)?;
+            check_validators_size(active_validators.len(), n)?;
 
-            select_pseudorandom_validators(deps, &env.block, &sender, n, &active_validators)?
+            select_pseudorandom_validators(&env.block, &sender, n, &active_validators)?
         }
         DelegationStrategy::TopN(n) => {
-            check_validators_size(n)?;
+            check_validators_size(active_validators.len(), n)?;
 
             active_validators
                 .iter()
@@ -52,7 +51,7 @@ pub(crate) fn get_validators(
                 .collect()
         }
         DelegationStrategy::BottomN(n) => {
-            check_validators_size(n)?;
+            check_validators_size(active_validators.len(), n)?;
 
             active_validators
                 .iter()
@@ -62,7 +61,7 @@ pub(crate) fn get_validators(
                 .collect()
         }
         DelegationStrategy::Custom(validators) => {
-            check_validators_size(validators.len())?;
+            check_validators_size(active_validators.len(), validators.len())?;
             validators
         }
     };
@@ -72,29 +71,33 @@ pub(crate) fn get_validators(
 /// Checks if the number of validators is valid.
 ///
 /// # Arguments
-/// * `n` - The number of validators.
+/// * `validators_n` - The number of validators to compare against.
+/// * `n` - The number of validators intending to delegate to.
 ///
 /// # Returns
 /// `()`, if the number of validators is valid.
 #[inline]
-fn check_validators_size(n: usize) -> Result<(), StakingError> {
-    ensure!(
-        n >= MIN_VALIDATORS,
-        StakingError::NotEnoughValidators {
-            min_validators: MIN_VALIDATORS,
-            provided_validators: n
-        }
-    );
+fn check_validators_size(validators_n: usize, n: usize) -> Result<(), StakingError> {
+    if validators_n >= MIN_VALIDATORS {
+        ensure!(
+            n >= MIN_VALIDATORS,
+            StakingError::NotEnoughValidators {
+                min_validators: MIN_VALIDATORS,
+                provided_validators: n
+            }
+        );
+    }
+
     Ok(())
 }
 
 /// Pseudorandomly selects a specified number of validators from the active validator set.
 ///
 /// # Arguments
-/// * `deps` - The dependencies for the contract.
 /// * `block` - The block information.
 /// * `sender` - The address of the sender.
 /// * `num_validators` - The number of validators to select.
+/// * `active_validators` - A vector of the validator set.
 ///
 /// # Returns
 /// A vector of selected validator addresses.
@@ -112,7 +115,6 @@ fn check_validators_size(n: usize) -> Result<(), StakingError> {
 /// }
 /// ```
 fn select_pseudorandom_validators(
-    deps: Deps,
     block: &BlockInfo,
     sender: &Addr,
     num_validators: usize,
