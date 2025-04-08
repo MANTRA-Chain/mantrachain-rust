@@ -43,3 +43,8 @@ refresh:
 # Cargo watch.
 watch:
   cargo watch -x lcheck
+
+# Installs pre-commit git hooks.
+install-git-hooks:
+    ./scripts/hooks/commit-msg.sh --install
+    ./scripts/hooks/pre-commit.sh --install
