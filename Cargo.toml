@@ -27,7 +27,7 @@ cw-ownable         = { version = "2.1.0" }
 heck               = { version = "0.4.0" }
 itertools          = { version = "0.10.3" }
 log                = { version = "0.4.17" }
-neutron-std-derive = { git = "https://github.com/neutron-org/neutron-std", rev = "v5.1.2" }
+neutron-std-derive = { version = "0.20.1" }
 pretty_env_logger  = { version = "0.4.0" }
 prettyplease       = { version = "0.1.16" }
 proc-macro2        = { version = "1.0.52" }
