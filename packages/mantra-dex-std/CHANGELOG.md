@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.2.0
+
+- Added:
+  - Tokenfactory params responses.
+  - usage of `mantrachain_std` instead of `osmosis-std` for the TokenfactoryQuerier.
+
 ## v2.1.6
 
 - Added:

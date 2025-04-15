@@ -14,7 +14,7 @@ license = "MPL-2.0"
 repository = "https://github.com/MANTRA-Chain/mantrachain-rust"
 
 [workspace.dependencies]
-mantra-dex-std  = { path = "./packages/mantra-dex-std", version = "2.1.6" }
+mantra-dex-std  = { path = "./packages/mantra-dex-std", version = "2.2.0" }
 mantrachain-std = { path = "./packages/mantrachain-std", version = "0.2.0" }
 
 anybuf             = { version = "0.5.2" }
