@@ -14,7 +14,6 @@ anybuf.workspace          = true
 cosmwasm-schema.workspace = true
 cosmwasm-std.workspace    = true
 cw-ownable.workspace      = true
-cw-storage-plus.workspace = true
 mantrachain-std.workspace = true
 uint.workspace            = true
 

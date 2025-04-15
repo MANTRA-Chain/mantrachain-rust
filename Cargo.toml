@@ -14,8 +14,8 @@ license = "MPL-2.0"
 repository = "https://github.com/MANTRA-Chain/mantrachain-rust"
 
 [workspace.dependencies]
-mantra-dex-std  = { path = "./packages/mantra-dex-std" }
-mantrachain-std = { path = "./packages/mantrachain-std" }
+mantra-dex-std  = { path = "./packages/mantra-dex-std", version = "2.1.6" }
+mantrachain-std = { path = "./packages/mantrachain-std", version = "0.2.0" }
 
 anybuf             = { version = "0.5.2" }
 anyhow             = { version = "1.0.95" }
@@ -24,18 +24,14 @@ cosmwasm-schema    = { version = "2.2.0" }
 cosmwasm-std       = { version = "2.2.0", default-features = true, features = ["cosmwasm_2_2"] }
 cw-multi-test      = { version = "2.2.0", features = ["cosmwasm_2_0"] }
 cw-ownable         = { version = "2.1.0" }
-cw-storage-plus    = { version = "2.0.0" }
-cw-utils           = { version = "2.0.0" }
 heck               = { version = "0.4.0" }
 itertools          = { version = "0.10.3" }
 log                = { version = "0.4.17" }
 neutron-std-derive = { git = "https://github.com/neutron-org/neutron-std", rev = "v5.1.2" }
-osmosis-std        = { version = "0.27.0" }
 pretty_env_logger  = { version = "0.4.0" }
 prettyplease       = { version = "0.1.16" }
 proc-macro2        = { version = "1.0.52" }
 prost              = { version = "0.13.3", default-features = false, features = ["prost-derive"] }
-prost-build        = { version = "0.13.3" }
 prost-types        = { version = "0.13.3", default-features = false }
 protobuf           = { version = "3.3.0" }
 quote              = { version = "1.0.26" }
@@ -49,11 +45,8 @@ sha2               = { version = "=0.10.8", default-features = false }
 syn                = { version = "1.0.98", features = ["full", "parsing", "extra-traits"] }
 test-case          = { version = "3.3.1" }
 thiserror          = { version = "2.0.12" }
-tonic              = { version = "0.7" }
-tonic-build        = { version = "0.7" }
 uint               = { version = "0.10.0" }
 walkdir            = { version = "2" }
-
 
 [profile.release]
 codegen-units    = 1

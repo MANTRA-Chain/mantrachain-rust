@@ -14,7 +14,6 @@ cosmwasm-std.workspace       = true
 neutron-std-derive.workspace = true
 prost                        = { workspace = true, default-features = true }
 prost-types                  = { workspace = true, default-features = true }
-protobuf.workspace           = true
 schemars.workspace           = true
 serde-json-wasm.workspace    = true
 
