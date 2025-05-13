@@ -167,14 +167,15 @@ pub enum ExecuteMsg {
     },
     /// Provides liquidity to the pool
     ProvideLiquidity {
-        /// A percentage value representing the acceptable slippage for the operation.
+        /// A percentage value representing the acceptable slippage for the add liquidity operation.
         /// When provided, if the slippage exceeds this value, the liquidity provision will not be
         /// executed.
-        slippage_tolerance: Option<Decimal>,
-        /// The maximum allowable slippage for the pool.
+        liquidity_max_slippage: Option<Decimal>,
+        /// The maximum allowable slippage for the swap before providing liquidity.
+        /// This is used when providing liquidity with a single asset.
         /// When provided, if the slippage exceeds this value, the liquidity provision will not be
         /// executed.
-        max_slippage: Option<Decimal>,
+        swap_max_slippage: Option<Decimal>,
         /// The receiver of the LP
         receiver: Option<String>,
         /// The identifier for the pool to provide liquidity for.

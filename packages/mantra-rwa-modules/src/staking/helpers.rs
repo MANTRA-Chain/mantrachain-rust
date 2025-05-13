@@ -39,7 +39,7 @@ pub(crate) fn get_validators(
             let n = n.unwrap_or(MIN_VALIDATORS);
             check_validators_size(active_validators.len(), n)?;
 
-            select_pseudorandom_validators(&env.block, &sender, n, &active_validators)?
+            select_pseudorandom_validators(&env.block, sender, n, &active_validators)?
         }
         DelegationStrategy::TopN(n) => {
             check_validators_size(active_validators.len(), n)?;

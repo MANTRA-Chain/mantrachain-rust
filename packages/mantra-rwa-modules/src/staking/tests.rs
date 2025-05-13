@@ -72,7 +72,7 @@ fn mock_staking_rewards(deps: &mut OwnedDeps<MockStorage, MockApi, MockQuerier>,
     deps.querier.staking.update(
         "uom",
         &get_validator_list(deps.api, 5),
-        &get_delegations(&deps.api, &sender, 4),
+        &get_delegations(&deps.api, sender, 4),
     );
 }
 
@@ -438,7 +438,7 @@ fn test_delegate() {
             Attribute::new("action", "delegate"),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator1").to_string(),
                     coin(250u128, "uom")
@@ -446,7 +446,7 @@ fn test_delegate() {
             ),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator2").to_string(),
                     coin(250u128, "uom")
@@ -454,7 +454,7 @@ fn test_delegate() {
             ),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator3").to_string(),
                     coin(250u128, "uom")
@@ -462,7 +462,7 @@ fn test_delegate() {
             ),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator4").to_string(),
                     coin(250u128, "uom")
@@ -511,7 +511,7 @@ fn test_delegate() {
             Attribute::new("action", "delegate"),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator1").to_string(),
                     coin(31u128, "uom")
@@ -519,7 +519,7 @@ fn test_delegate() {
             ),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator2").to_string(),
                     coin(31u128, "uom")
@@ -527,7 +527,7 @@ fn test_delegate() {
             ),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator3").to_string(),
                     coin(31u128, "uom")
@@ -535,7 +535,7 @@ fn test_delegate() {
             ),
             Attribute::new(
                 "delegation",
-                &format!(
+                format!(
                     "validator: {:?} -> {:?}",
                     deps.api.addr_make("validator4").to_string(),
                     coin(32u128, "uom")
@@ -563,8 +563,8 @@ fn test_undelegate() {
         attributes,
         vec![
             Attribute::new("action", "undelegate"),
-            Attribute::new("validator", &deps.api.addr_make("validator1").to_string()),
-            Attribute::new("amount", &amount.to_string()),
+            Attribute::new("validator", deps.api.addr_make("validator1").to_string()),
+            Attribute::new("amount", amount.to_string()),
         ]
     );
 }

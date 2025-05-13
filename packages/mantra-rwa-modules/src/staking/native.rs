@@ -114,7 +114,7 @@ pub fn delegate(
             messages.push(msg);
             attributes.push(Attribute::new(
                 "delegation",
-                &format!("validator: {:?} -> {:?}", validator, delegation),
+                format!("validator: {:?} -> {:?}", validator, delegation),
             ));
         }
     }
@@ -157,7 +157,7 @@ pub fn undelegate(
     let attributes = vec![
         Attribute::new("action", "undelegate"),
         Attribute::new("validator", validator),
-        Attribute::new("amount", &amount.to_string()),
+        Attribute::new("amount", amount.to_string()),
     ];
 
     Ok((
@@ -237,14 +237,14 @@ pub fn claim_staking_rewards(
             total_amount = total_amount.checked_add(amount)?;
             attributes.push(Attribute::new(
                 "reward",
-                &format!("{}{}", amount, bonded_denom),
+                format!("{}{}", amount, bonded_denom),
             ));
         }
     }
 
     attributes.push(Attribute::new(
         "total_reward",
-        &format!("{}{}", total_amount, bonded_denom),
+        format!("{}{}", total_amount, bonded_denom),
     ));
 
     if let Some(recipient) = recipient {
