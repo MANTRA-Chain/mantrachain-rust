@@ -7,7 +7,7 @@ keywords             = ["mantrachain", "mantra", "testing", "cosmwasm"]
 license.workspace    = true
 name                 = "mantra-common-testing"
 repository.workspace = true
-version              = "1.2.0"
+version              = "1.2.1"
 
 [dependencies]
 anyhow.workspace          = true

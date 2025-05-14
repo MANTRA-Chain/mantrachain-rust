@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.0
+
+- Fix spread vs slippage nomenclature.
+
 ## v2.2.0
 
 - Added:
@@ -19,12 +23,12 @@
 
 - Added:
   - BeforeSendHook msg to tokenfactory helpers.
-  
+
 ## v2.1.4
 
 - Removed:
   - Unused fields on Farm struct.
-  
+
 ## v2.1.3
 
 - Added:
