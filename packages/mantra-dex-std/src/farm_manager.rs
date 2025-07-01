@@ -198,10 +198,15 @@ pub struct FarmParams {
 
 #[cw_serde]
 pub enum FarmAction {
-    /// Fills a farm. If the farm doesn't exist, it creates a new one. If it exists already,
-    /// it expands it given the sender created the original farm and the params are correct.
-    Fill {
-        /// The parameters for the farm to fill.
+    /// Creates a new farm with the given parameters.
+    Create {
+        /// The parameters for the farm to create.
+        params: FarmParams,
+    },
+    /// Expands an existing farm. The farm must already exist and the sender must be the
+    /// farm owner. The farm_identifier must be provided in the params.
+    Expand {
+        /// The parameters for the farm to expand.
         params: FarmParams,
     },
     //// Closes a farm with the given identifier. If the farm has expired, anyone can
