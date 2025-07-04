@@ -118,8 +118,8 @@ pub struct ClaimedResponse {
 /// Response to the Allocation query.
 #[cw_serde]
 pub struct AllocationsResponse {
-    /// A vector with a tuple with (address, amount) that have been allocated.
-    pub allocations: Vec<(String, Uint128)>,
+    /// A vector with a tuple with (address, coin) that have been allocated.
+    pub allocations: Vec<(String, Coin)>,
 }
 
 /// Response to the Blacklist query.
