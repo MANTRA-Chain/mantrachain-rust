@@ -6,6 +6,13 @@ use cw_ownable::{cw_ownable_execute, cw_ownable_query};
 
 use crate::error::ContractError;
 
+/// Maximum length for campaign name
+const MAX_NAME_LENGTH: usize = 200;
+/// Maximum length for campaign description
+const MAX_DESCRIPTION_LENGTH: usize = 2000;
+/// Maximum length for campaign type
+const MAX_TYPE_LENGTH: usize = 200;
+
 #[cw_serde]
 pub struct InstantiateMsg {
     /// Owner of the contract. If not set, it is the sender of the Instantiate message.
@@ -255,10 +262,10 @@ impl CampaignParams {
         );
 
         ensure!(
-            self.name.len() <= 200usize,
+            self.name.len() <= MAX_NAME_LENGTH,
             ContractError::InvalidCampaignParam {
                 param: "name".to_string(),
-                reason: "cannot be longer than 200 characters".to_string(),
+                reason: format!("cannot be longer than {} characters", MAX_NAME_LENGTH),
             }
         );
 
@@ -271,10 +278,10 @@ impl CampaignParams {
         );
 
         ensure!(
-            self.description.len() <= 2000usize,
+            self.description.len() <= MAX_DESCRIPTION_LENGTH,
             ContractError::InvalidCampaignParam {
                 param: "description".to_string(),
-                reason: "cannot be longer than 2000 characters".to_string(),
+                reason: format!("cannot be longer than {} characters", MAX_DESCRIPTION_LENGTH),
             }
         );
 
@@ -292,10 +299,10 @@ impl CampaignParams {
         );
 
         ensure!(
-            self.ty.len() <= 200usize,
+            self.ty.len() <= MAX_TYPE_LENGTH,
             ContractError::InvalidCampaignParam {
                 param: "type".to_string(),
-                reason: "cannot be longer than 200 characters".to_string(),
+                reason: format!("cannot be longer than {} characters", MAX_TYPE_LENGTH),
             }
         );
 
