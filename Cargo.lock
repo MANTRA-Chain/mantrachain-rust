@@ -433,6 +433,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-migrate-error-derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "431d51e7f8b028e8a09d2125be3c6b8661b512ba40daadf6e0ffc4aadcef604b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "semver",
+ "syn 2.0.101",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "cw-multi-test"
 version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -805,6 +818,20 @@ name = "log"
 version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
+
+[[package]]
+name = "mantra-claimdrop-std"
+version = "1.1.0"
+dependencies = [
+ "anyhow",
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-migrate-error-derive",
+ "cw-ownable",
+ "cw-utils",
+ "semver",
+ "thiserror 2.0.12",
+]
 
 [[package]]
 name = "mantra-common-testing"
