@@ -281,7 +281,10 @@ impl CampaignParams {
             self.description.len() <= MAX_DESCRIPTION_LENGTH,
             ContractError::InvalidCampaignParam {
                 param: "description".to_string(),
-                reason: format!("cannot be longer than {} characters", MAX_DESCRIPTION_LENGTH),
+                reason: format!(
+                    "cannot be longer than {} characters",
+                    MAX_DESCRIPTION_LENGTH
+                ),
             }
         );
 
