@@ -56,6 +56,13 @@ pub enum ExecuteMsg {
         /// Whether to blacklist or unblacklist
         blacklist: bool,
     },
+    /// Manages authorized wallets that can perform admin actions. Only the owner can manage authorized wallets.
+    ManageAuthorizedWallets {
+        /// Vector of addresses to authorize/unauthorize
+        addresses: Vec<String>,
+        /// Whether to authorize or unauthorize the addresses
+        authorized: bool,
+    },
 }
 
 #[cw_ownable_query]
@@ -97,6 +104,20 @@ pub enum QueryMsg {
         /// The address to check
         address: String,
     },
+    #[returns(AuthorizedResponse)]
+    /// Check if an address is authorized (owner or authorized wallet)
+    IsAuthorized {
+        /// The address to check
+        address: String,
+    },
+    #[returns(AuthorizedWalletsResponse)]
+    /// Get authorized wallets with pagination
+    AuthorizedWallets {
+        /// The address to start querying from. Used for paginating results.
+        start_after: Option<String>,
+        /// The maximum number of items to return. Used for paginating results.
+        limit: Option<u32>,
+    },
 }
 
 #[cw_serde]
@@ -134,6 +155,20 @@ pub struct AllocationsResponse {
 pub struct BlacklistResponse {
     /// Whether the address is blacklisted
     pub is_blacklisted: bool,
+}
+
+/// Response to the IsAuthorized query.
+#[cw_serde]
+pub struct AuthorizedResponse {
+    /// Whether the address is authorized (owner or authorized wallet)
+    pub is_authorized: bool,
+}
+
+/// Response to the AuthorizedWallets query.
+#[cw_serde]
+pub struct AuthorizedWalletsResponse {
+    /// List of authorized wallet addresses
+    pub wallets: Vec<String>,
 }
 
 /// The campaign action that can be executed with the [ExecuteMsg::ManageCampaign] message.

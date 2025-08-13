@@ -75,6 +75,9 @@ pub enum ContractError {
 
     #[error("Batch size limit exceeded: {actual}, maximum allowed: {max}")]
     BatchSizeLimitExceeded { actual: usize, max: usize },
+
+    #[error("Unauthorized")]
+    Unauthorized,
 }
 
 impl From<semver::Error> for ContractError {
