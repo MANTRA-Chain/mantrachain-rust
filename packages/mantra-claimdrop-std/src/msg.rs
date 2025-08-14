@@ -17,6 +17,8 @@ const MAX_TYPE_LENGTH: usize = 200;
 pub struct InstantiateMsg {
     /// Owner of the contract. If not set, it is the sender of the Instantiate message.
     pub owner: Option<String>,
+    /// Optinal action in case the contract is instantiated via the claimdrop factory
+    pub action: Option<CampaignAction>,
 }
 
 #[cw_ownable_execute]
