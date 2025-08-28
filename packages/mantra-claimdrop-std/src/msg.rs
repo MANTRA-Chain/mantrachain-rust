@@ -65,6 +65,15 @@ pub enum ExecuteMsg {
         /// Whether to authorize or unauthorize the addresses
         authorized: bool,
     },
+    /// Sweep non-reward tokens from the contract (owner only)
+    /// This allows retrieving any tokens accidentally sent to the contract
+    /// that are not the campaign's reward denom
+    Sweep {
+        /// The denomination of the token to sweep
+        denom: String,
+        /// Optional amount to sweep. If not provided, sweeps entire balance
+        amount: Option<Uint128>,
+    },
 }
 
 #[cw_ownable_query]
