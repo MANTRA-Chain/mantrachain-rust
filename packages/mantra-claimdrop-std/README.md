@@ -35,7 +35,6 @@ let campaign_params = CampaignParams {
     name: "My Airdrop".to_string(),
     description: "Token distribution campaign".to_string(),
     ty: "airdrop".to_string(),
-    reward_denom: "umantra".to_string(),
     total_reward: Coin::new(1000000u128, "umantra"),
     distribution_type: vec![DistributionType::LumpSum {
         percentage: Decimal::percent(100),

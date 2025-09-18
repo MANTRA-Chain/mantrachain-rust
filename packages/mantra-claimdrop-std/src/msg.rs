@@ -65,6 +65,15 @@ pub enum ExecuteMsg {
         /// Whether to authorize or unauthorize the addresses
         authorized: bool,
     },
+    /// Sweep non-reward tokens from the contract (owner only)
+    /// This allows retrieving any tokens accidentally sent to the contract
+    /// that are not the campaign's reward denom
+    Sweep {
+        /// The denomination of the token to sweep
+        denom: String,
+        /// Optional amount to sweep. If not provided, sweeps entire balance
+        amount: Option<Uint128>,
+    },
 }
 
 #[cw_ownable_query]
@@ -195,8 +204,6 @@ pub struct Campaign {
     /// Campaign type. Value used by front ends.
     #[serde(rename = "type")]
     pub ty: String,
-    /// The denom to be distributed as reward by the campaign
-    pub reward_denom: String,
     /// The total amount of the reward asset that is intended to be allocated to the campaign
     pub total_reward: Coin,
     /// The amount of the reward asset that has been claimed
@@ -216,11 +223,10 @@ impl Display for Campaign {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Campaign {{ name: {}, description: {}, type: {}, reward_denom: {}, total_reward: {}, claimed: {}, distribution_type: {:?}, start_time: {}, end_time: {}, closed: {:?} }}",
+            "Campaign {{ name: {}, description: {}, type: {}, total_reward: {}, claimed: {}, distribution_type: {:?}, start_time: {}, end_time: {}, closed: {:?} }}",
             self.name,
             self.description,
             self.ty,
-            self.reward_denom,
             self.total_reward,
             self.claimed,
             self.distribution_type,
@@ -234,13 +240,12 @@ impl Display for Campaign {
 impl Campaign {
     /// Creates a new campaign from the given parameters
     pub fn from_params(params: CampaignParams) -> Self {
-        let reward_denom = params.reward_denom.clone();
+        let reward_denom = params.total_reward.denom.clone();
 
         Campaign {
             name: params.name,
             description: params.description,
             ty: params.ty,
-            reward_denom: params.reward_denom,
             total_reward: params.total_reward,
             claimed: Coin {
                 denom: reward_denom,
@@ -274,8 +279,6 @@ pub struct CampaignParams {
     /// Campaign type. Value used by front ends.
     #[serde(rename = "type")]
     pub ty: String,
-    /// The denom to be distributed as reward by the campaign
-    pub reward_denom: String,
     /// The total amount of the reward asset that is intended to be allocated to the campaign
     pub total_reward: Coin,
     /// The ways the reward is distributed, which are defined by the [DistributionType].
@@ -464,21 +467,13 @@ impl CampaignParams {
         Ok(())
     }
 
-    /// Validates the total reward amount and denom
+    /// Validates the total reward amount
     pub fn validate_rewards(&self) -> Result<(), ContractError> {
         ensure!(
             self.total_reward.amount > Uint128::zero(),
             ContractError::InvalidCampaignParam {
                 param: "total_reward".to_string(),
                 reason: "cannot be zero".to_string()
-            }
-        );
-
-        ensure!(
-            self.total_reward.denom == self.reward_denom,
-            ContractError::InvalidCampaignParam {
-                param: "reward_denom".to_string(),
-                reason: "reward denom mismatch".to_string()
             }
         );
 
