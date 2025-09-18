@@ -289,7 +289,7 @@ pub struct CampaignParams {
     /// The campaign end timestamp (unix timestamp), in seconds
     pub end_time: u64,
     /// An optional label to be used for the instantiated claimdrop contract
-    pub contract_label: Option<String>,
+    pub contract_label: String,
 }
 
 impl CampaignParams {
