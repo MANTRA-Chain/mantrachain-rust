@@ -5,7 +5,7 @@ set -euxo pipefail
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 MANTRACHAIN_REV=${1:-main}
 
-LATEST_MANTRACHAIN_VERSION="v4.0.0"
+LATEST_MANTRACHAIN_VERSION="v5.0.0"
 
 # if "$MANTRACHAIN_REV" is /v\d+/ then extract it as var
 if [[ "$MANTRACHAIN_REV" =~ ^v[0-9]+ ]]; then

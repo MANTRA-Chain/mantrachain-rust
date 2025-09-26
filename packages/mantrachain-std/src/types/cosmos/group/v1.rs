@@ -347,13 +347,9 @@ pub struct Proposal {
     #[prost(message, repeated, tag = "12")]
     pub messages: ::prost::alloc::vec::Vec<crate::shim::Any>,
     /// title is the title of the proposal
-    ///
-    /// Since: cosmos-sdk 0.47
     #[prost(string, tag = "13")]
     pub title: ::prost::alloc::string::String,
     /// summary is a short summary of the proposal
-    ///
-    /// Since: cosmos-sdk 0.47
     #[prost(string, tag = "14")]
     pub summary: ::prost::alloc::string::String,
 }
@@ -1485,8 +1481,6 @@ pub struct QueryTallyResultResponse {
     pub tally: ::core::option::Option<TallyResult>,
 }
 /// QueryGroupsRequest is the Query/Groups request type.
-///
-/// Since: cosmos-sdk 0.47.1
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -1509,8 +1503,6 @@ pub struct QueryGroupsRequest {
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryGroupsResponse is the Query/Groups response type.
-///
-/// Since: cosmos-sdk 0.47.1
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -1969,13 +1961,9 @@ pub struct MsgSubmitProposal {
     )]
     pub exec: i32,
     /// title is the title of the proposal.
-    ///
-    /// Since: cosmos-sdk 0.47
     #[prost(string, tag = "6")]
     pub title: ::prost::alloc::string::String,
     /// summary is the summary of the proposal.
-    ///
-    /// Since: cosmos-sdk 0.47
     #[prost(string, tag = "7")]
     pub summary: ::prost::alloc::string::String,
 }
