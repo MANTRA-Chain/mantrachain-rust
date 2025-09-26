@@ -1610,11 +1610,14 @@ impl<'a, Q: cosmwasm_std::CustomQuery> VmQuerier<'a, Q> {
         };
 
         use prost::Message;
-        let resp: Result<EstimateGasResponse, prost::DecodeError> = Message::decode(self.querier.query_grpc(
-            "/cosmos.evm.vm.v1.Query/EstimateGas".to_string(),
-            request.to_proto_bytes().into(),
-        )?
-        .as_slice());
+        let resp: Result<EstimateGasResponse, prost::DecodeError> = Message::decode(
+            self.querier
+                .query_grpc(
+                    "/cosmos.evm.vm.v1.Query/EstimateGas".to_string(),
+                    request.to_proto_bytes().into(),
+                )?
+                .as_slice(),
+        );
 
         match resp {
             Err(e) => Err(cosmwasm_std::StdError::generic_err(format!(
