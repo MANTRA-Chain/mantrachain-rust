@@ -86,7 +86,12 @@ pub struct QueryParamsResponse {
     path = "/mantrachain.sanction.v1.Query/Blacklist",
     response_type = QueryBlacklistResponse
 )]
-pub struct QueryBlacklistRequest {}
+pub struct QueryBlacklistRequest {
+    /// pagination defines an optional pagination for the request.
+    #[prost(message, optional, tag = "1")]
+    pub pagination:
+        ::core::option::Option<super::super::super::cosmos::base::query::v1beta1::PageRequest>,
+}
 /// QueryBlacklistResponse is response type for the Query/Blacklist RPC method.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
@@ -104,6 +109,10 @@ pub struct QueryBlacklistResponse {
     /// blacklisted_accounts defines the list of blacklisted accounts.
     #[prost(string, repeated, tag = "1")]
     pub blacklisted_accounts: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// pagination defines the pagination in the response.
+    #[prost(message, optional, tag = "2")]
+    pub pagination:
+        ::core::option::Option<super::super::super::cosmos::base::query::v1beta1::PageResponse>,
 }
 /// MsgAddBlacklistAccounts is the message type for adding an account to the blacklist.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -181,7 +190,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> SanctionQuerier<'a, Q> {
     pub fn params(&self) -> Result<QueryParamsResponse, cosmwasm_std::StdError> {
         QueryParamsRequest {}.query(self.querier)
     }
-    pub fn blacklist(&self) -> Result<QueryBlacklistResponse, cosmwasm_std::StdError> {
-        QueryBlacklistRequest {}.query(self.querier)
+    pub fn blacklist(
+        &self,
+        pagination: ::core::option::Option<
+            super::super::super::cosmos::base::query::v1beta1::PageRequest,
+        >,
+    ) -> Result<QueryBlacklistResponse, cosmwasm_std::StdError> {
+        QueryBlacklistRequest { pagination }.query(self.querier)
     }
 }

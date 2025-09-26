@@ -12,10 +12,11 @@ use proto_build::{
 
 const COSMOS_SDK_REPO: &str = "https://github.com/MANTRA-Chain/cosmos-sdk.git";
 const CONNECT_REPO: &str = "https://github.com/MANTRA-Chain/connect.git";
+const EVM_REPO: &str = "https://github.com/MANTRA-Chain/evm.git";
 const MANTRACHAIN_REPO: &str = "https://github.com/MANTRA-Chain/mantrachain.git";
 
 /// The mantrachain commit or tag to be cloned and used to build the proto files
-const MANTRACHAIN_REV: &str = "v4.0.0";
+const MANTRACHAIN_REV: &str = "v5.0.0";
 
 // All paths must end with a / and either be absolute or include a ./ to reference the current
 // working directory.
@@ -24,6 +25,8 @@ const MANTRACHAIN_REV: &str = "v4.0.0";
 const COSMOS_SDK_DIR: &str = "../../dependencies/cosmos-sdk/";
 /// Directory where the connect submodule is located
 const CONNECT_DIR: &str = "../../dependencies/connect/";
+/// Directory where the evm submodule is located
+const EVM_DIR: &str = "../../dependencies/evm/";
 /// Directory where the mantrachain submodule is located
 const MANTRACHAIN_DIR: &str = "../../dependencies/mantrachain/";
 
@@ -47,9 +50,12 @@ pub fn generate() {
         .expect("Failed to get Cosmos SDK version");
     let connect_rev = git::get_version_from_go_mod(MANTRACHAIN_DIR, git::Module::Connect)
         .expect("Failed to get Connect version");
+    let evm_rev = git::get_version_from_go_mod(MANTRACHAIN_DIR, git::Module::Evm)
+        .expect("Failed to get EVM version");
 
     git::clone_repo(COSMOS_SDK_REPO, COSMOS_SDK_DIR, &cosmos_sdk_rev);
     git::clone_repo(CONNECT_REPO, CONNECT_DIR, &connect_rev);
+    git::clone_repo(EVM_REPO, EVM_DIR, &evm_rev);
 
     let tmp_build_dir: PathBuf = TMP_BUILD_DIR.parse().unwrap();
     let out_dir: PathBuf = OUT_DIR.parse().unwrap();
@@ -58,13 +64,25 @@ pub fn generate() {
         name: "cosmos".to_string(),
         version: cosmos_sdk_rev,
         project_dir: COSMOS_SDK_DIR.to_string(),
-        exclude_mods: vec!["reflection".to_string(), "autocli".to_string()],
+        exclude_mods: vec![
+            "autocli".to_string(),
+            "benchmark".to_string(),
+            "counter".to_string(),
+            "reflection".to_string(),
+        ],
     };
 
     let connect_project = CosmosProject {
         name: "connect".to_string(),
         version: connect_rev.to_string(),
         project_dir: CONNECT_DIR.to_string(),
+        exclude_mods: vec![],
+    };
+
+    let evm_project = CosmosProject {
+        name: "evm".to_string(),
+        version: evm_rev.to_string(),
+        project_dir: EVM_DIR.to_string(),
         exclude_mods: vec![],
     };
 
@@ -79,7 +97,7 @@ pub fn generate() {
         out_dir,
         tmp_build_dir,
         mantrachain_project,
-        vec![cosmos_project, connect_project],
+        vec![cosmos_project, connect_project, evm_project],
     );
 
     mantrachain_code_generator.generate();

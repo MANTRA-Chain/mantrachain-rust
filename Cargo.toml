@@ -15,7 +15,7 @@ repository = "https://github.com/MANTRA-Chain/mantrachain-rust"
 
 [workspace.dependencies]
 mantra-dex-std  = { path = "./packages/mantra-dex-std", version = "3.1.0" }
-mantrachain-std = { path = "./packages/mantrachain-std", version = "0.2.0" }
+mantrachain-std = { path = "./packages/mantrachain-std", version = "0.3.0" }
 
 anybuf                  = { version = "0.5.2" }
 anyhow                  = { version = "1.0.95" }
