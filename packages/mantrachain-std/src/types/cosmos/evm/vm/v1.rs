@@ -1592,6 +1592,9 @@ impl<'a, Q: cosmwasm_std::CustomQuery> VmQuerier<'a, Q> {
         }
         .query(self.querier)
     }
+
+    // Directly modify estimate_gas to avoid returning MsgEthereumTxResponse instead of EstimateGasResponse from
+    // calling .query()
     pub fn estimate_gas(
         &self,
         args: ::prost::alloc::vec::Vec<u8>,
@@ -1599,13 +1602,27 @@ impl<'a, Q: cosmwasm_std::CustomQuery> VmQuerier<'a, Q> {
         proposer_address: ::prost::alloc::vec::Vec<u8>,
         chain_id: i64,
     ) -> Result<EstimateGasResponse, cosmwasm_std::StdError> {
-        EthCallRequest {
+        let request = EthCallRequest {
             args,
             gas_cap,
             proposer_address,
             chain_id,
+        };
+
+        use prost::Message;
+        let resp: Result<EstimateGasResponse, prost::DecodeError> = Message::decode(self.querier.query_grpc(
+            "/cosmos.evm.vm.v1.Query/EstimateGas".to_string(),
+            request.to_proto_bytes().into(),
+        )?
+        .as_slice());
+
+        match resp {
+            Err(e) => Err(cosmwasm_std::StdError::generic_err(format!(
+                "Can't decode item: {}",
+                e
+            ))),
+            Ok(data) => Ok(data),
         }
-        .query(self.querier)
     }
     pub fn trace_tx(
         &self,
