@@ -1,8 +1,6 @@
 use neutron_std_derive::CosmwasmExt;
 /// SendAuthorization allows the grantee to spend up to spend_limit coins from
 /// the granter's account.
-///
-/// Since: cosmos-sdk 0.43
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -20,8 +18,6 @@ pub struct SendAuthorization {
     pub spend_limit: ::prost::alloc::vec::Vec<super::super::base::v1beta1::Coin>,
     /// allow_list specifies an optional list of addresses to whom the grantee can send tokens on behalf of the
     /// granter. If omitted, any recipient is allowed.
-    ///
-    /// Since: cosmos-sdk 0.47
     #[prost(string, repeated, tag = "2")]
     pub allow_list: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
@@ -189,25 +185,17 @@ pub struct Metadata {
     #[prost(string, tag = "4")]
     pub display: ::prost::alloc::string::String,
     /// name defines the name of the token (eg: Cosmos Atom)
-    ///
-    /// Since: cosmos-sdk 0.43
     #[prost(string, tag = "5")]
     pub name: ::prost::alloc::string::String,
     /// symbol is the token symbol usually shown on exchanges (eg: ATOM). This can
     /// be the same as the display.
-    ///
-    /// Since: cosmos-sdk 0.43
     #[prost(string, tag = "6")]
     pub symbol: ::prost::alloc::string::String,
     /// URI to a document (on or off-chain) that contains additional information. Optional.
-    ///
-    /// Since: cosmos-sdk 0.46
     #[prost(string, tag = "7")]
     pub uri: ::prost::alloc::string::String,
     /// URIHash is a sha256 hash of a document pointed by URI. It's used to verify that
     /// the document didn't change. Optional.
-    ///
-    /// Since: cosmos-sdk 0.46
     #[prost(string, tag = "8")]
     pub uri_hash: ::prost::alloc::string::String,
 }
@@ -239,8 +227,6 @@ pub struct GenesisState {
     #[prost(message, repeated, tag = "4")]
     pub denom_metadata: ::prost::alloc::vec::Vec<Metadata>,
     /// send_enabled defines the denoms where send is enabled or disabled.
-    ///
-    /// Since: cosmos-sdk 0.47
     #[prost(message, repeated, tag = "5")]
     pub send_enabled: ::prost::alloc::vec::Vec<SendEnabled>,
 }
@@ -334,8 +320,6 @@ pub struct QueryAllBalancesRequest {
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
     /// resolve_denom is the flag to resolve the denom into a human-readable form from the metadata.
-    ///
-    /// Since: cosmos-sdk 0.50
     #[prost(bool, tag = "3")]
     pub resolve_denom: bool,
 }
@@ -363,8 +347,6 @@ pub struct QueryAllBalancesResponse {
 }
 /// QuerySpendableBalancesRequest defines the gRPC request structure for querying
 /// an account's spendable balances.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -391,8 +373,6 @@ pub struct QuerySpendableBalancesRequest {
 }
 /// QuerySpendableBalancesResponse defines the gRPC response structure for querying
 /// an account's spendable balances.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -415,8 +395,6 @@ pub struct QuerySpendableBalancesResponse {
 }
 /// QuerySpendableBalanceByDenomRequest defines the gRPC request structure for
 /// querying an account's spendable balance for a specific denom.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -443,8 +421,6 @@ pub struct QuerySpendableBalanceByDenomRequest {
 }
 /// QuerySpendableBalanceByDenomResponse defines the gRPC response structure for
 /// querying an account's spendable balance for a specific denom.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -482,8 +458,6 @@ pub struct QuerySpendableBalanceByDenomResponse {
 )]
 pub struct QueryTotalSupplyRequest {
     /// pagination defines an optional pagination for the request.
-    ///
-    /// Since: cosmos-sdk 0.43
     #[prost(message, optional, tag = "1")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
@@ -506,8 +480,6 @@ pub struct QueryTotalSupplyResponse {
     #[prost(message, repeated, tag = "1")]
     pub supply: ::prost::alloc::vec::Vec<super::super::base::v1beta1::Coin>,
     /// pagination defines the pagination in the response.
-    ///
-    /// Since: cosmos-sdk 0.43
     #[prost(message, optional, tag = "2")]
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
@@ -744,8 +716,6 @@ pub struct QueryDenomOwnersRequest {
 /// DenomOwner defines structure representing an account that owns or holds a
 /// particular denominated token. It contains the account address and account
 /// balance of the denominated token.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -767,8 +737,6 @@ pub struct DenomOwner {
     pub balance: ::core::option::Option<super::super::base::v1beta1::Coin>,
 }
 /// QueryDenomOwnersResponse defines the RPC response of a DenomOwners RPC query.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -791,8 +759,6 @@ pub struct QueryDenomOwnersResponse {
 /// QueryDenomOwnersByQueryRequest defines the request type for the DenomOwnersByQuery RPC query,
 /// which queries for a paginated set of all account holders of a particular
 /// denomination.
-///
-/// Since: cosmos-sdk 0.50.3
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -818,8 +784,6 @@ pub struct QueryDenomOwnersByQueryRequest {
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryDenomOwnersByQueryResponse defines the RPC response of a DenomOwnersByQuery RPC query.
-///
-/// Since: cosmos-sdk 0.50.3
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -840,8 +804,6 @@ pub struct QueryDenomOwnersByQueryResponse {
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QuerySendEnabledRequest defines the RPC request for looking up SendEnabled entries.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -868,8 +830,6 @@ pub struct QuerySendEnabledRequest {
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QuerySendEnabledResponse defines the RPC response of a SendEnable query.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -961,8 +921,6 @@ pub struct MsgMultiSend {
 #[proto_message(type_url = "/cosmos.bank.v1beta1.MsgMultiSendResponse")]
 pub struct MsgMultiSendResponse {}
 /// MsgUpdateParams is the Msg/UpdateParams request type.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -987,8 +945,6 @@ pub struct MsgUpdateParams {
 }
 /// MsgUpdateParamsResponse defines the response structure for executing a
 /// MsgUpdateParams message.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -1007,8 +963,6 @@ pub struct MsgUpdateParamsResponse {}
 /// Only entries to add/update/delete need to be included.
 /// Existing SendEnabled entries that are not included in this
 /// message are left unchanged.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -1036,8 +990,6 @@ pub struct MsgSetSendEnabled {
     pub use_default_for: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 /// MsgSetSendEnabledResponse defines the Msg/SetSendEnabled response type.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -1065,7 +1017,6 @@ impl<'a, Q: cosmwasm_std::CustomQuery> BankQuerier<'a, Q> {
     ) -> Result<QueryBalanceResponse, cosmwasm_std::StdError> {
         QueryBalanceRequest { address, denom }.query(self.querier)
     }
-    #[deprecated]
     pub fn all_balances(
         &self,
         address: ::prost::alloc::string::String,
@@ -1112,6 +1063,12 @@ impl<'a, Q: cosmwasm_std::CustomQuery> BankQuerier<'a, Q> {
     pub fn params(&self) -> Result<QueryParamsResponse, cosmwasm_std::StdError> {
         QueryParamsRequest {}.query(self.querier)
     }
+    pub fn denoms_metadata(
+        &self,
+        pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
+    ) -> Result<QueryDenomsMetadataResponse, cosmwasm_std::StdError> {
+        QueryDenomsMetadataRequest { pagination }.query(self.querier)
+    }
     pub fn denom_metadata(
         &self,
         denom: ::prost::alloc::string::String,
@@ -1123,12 +1080,6 @@ impl<'a, Q: cosmwasm_std::CustomQuery> BankQuerier<'a, Q> {
         denom: ::prost::alloc::string::String,
     ) -> Result<QueryDenomMetadataByQueryStringResponse, cosmwasm_std::StdError> {
         QueryDenomMetadataByQueryStringRequest { denom }.query(self.querier)
-    }
-    pub fn denoms_metadata(
-        &self,
-        pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
-    ) -> Result<QueryDenomsMetadataResponse, cosmwasm_std::StdError> {
-        QueryDenomsMetadataRequest { pagination }.query(self.querier)
     }
     pub fn denom_owners(
         &self,

@@ -38,6 +38,7 @@ pub fn clone_repo(repo: &str, dir: &str, rev: &str) {
 pub enum Module {
     CosmosSdk,
     Connect,
+    Evm,
 }
 
 pub fn get_version_from_go_mod(project_dir: &str, module: Module) -> Result<String, String> {
@@ -50,6 +51,10 @@ pub fn get_version_from_go_mod(project_dir: &str, module: Module) -> Result<Stri
         }
         Module::Connect => {
             extract_module_version(&content, "skip-mev/connect/v2", "MANTRA-Chain/connect/v2")
+        }
+        Module::Evm => {
+            // extract_module_version(&content, "cosmos/evm", "MANTRA-Chain/evm")
+            Ok("mantra/v0.4.x_main".to_string()) // Temporary hardcode until evm repo tag is ready
         }
     }
 }

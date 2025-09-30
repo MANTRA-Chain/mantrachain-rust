@@ -209,8 +209,6 @@ pub struct QueryAllowancesResponse {
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageResponse>,
 }
 /// QueryAllowancesByGranterRequest is the request type for the Query/AllowancesByGranter RPC method.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -235,8 +233,6 @@ pub struct QueryAllowancesByGranterRequest {
     pub pagination: ::core::option::Option<super::super::base::query::v1beta1::PageRequest>,
 }
 /// QueryAllowancesByGranterResponse is the response type for the Query/AllowancesByGranter RPC method.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -332,8 +328,6 @@ pub struct MsgRevokeAllowance {
 #[proto_message(type_url = "/cosmos.feegrant.v1beta1.MsgRevokeAllowanceResponse")]
 pub struct MsgRevokeAllowanceResponse {}
 /// MsgPruneAllowances prunes expired fee allowances.
-///
-/// Since cosmos-sdk 0.50
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -352,8 +346,6 @@ pub struct MsgPruneAllowances {
     pub pruner: ::prost::alloc::string::String,
 }
 /// MsgPruneAllowancesResponse defines the Msg/PruneAllowancesResponse response type.
-///
-/// Since cosmos-sdk 0.50
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,

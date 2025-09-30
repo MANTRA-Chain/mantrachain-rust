@@ -87,8 +87,6 @@ pub struct QueryParamsResponse {
 }
 /// QuerySubspacesRequest defines a request type for querying for all registered
 /// subspaces and all keys for a subspace.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -108,8 +106,6 @@ pub struct QueryParamsResponse {
 pub struct QuerySubspacesRequest {}
 /// QuerySubspacesResponse defines the response types for querying for all
 /// registered subspaces and all keys for a subspace.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -128,8 +124,6 @@ pub struct QuerySubspacesResponse {
 }
 /// Subspace defines a parameter subspace name and all the keys that exist for
 /// the subspace.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,

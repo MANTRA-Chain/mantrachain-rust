@@ -1,5 +1,5 @@
 use neutron_std_derive::CosmwasmExt;
-/// Module is the config object for the module.
+/// Module is the config object of the consensus module.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -11,10 +11,9 @@ use neutron_std_derive::CosmwasmExt;
     ::schemars::JsonSchema,
     CosmwasmExt,
 )]
-#[proto_message(type_url = "/mantrachain.xfeemarket.module.v1.Module")]
+#[proto_message(type_url = "/cosmos.protocolpool.module.v1.Module")]
 pub struct Module {
-    /// authority defines the custom module authority. If not set, defaults to the
-    /// governance module.
+    /// authority defines the custom module authority. If not set, defaults to the governance module.
     #[prost(string, tag = "1")]
     pub authority: ::prost::alloc::string::String,
 }

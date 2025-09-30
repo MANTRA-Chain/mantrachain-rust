@@ -100,8 +100,6 @@ pub struct CancelSoftwareUpgradeProposal {
     pub description: ::prost::alloc::string::String,
 }
 /// ModuleVersion specifies a module and its consensus version.
-///
-/// Since: cosmos-sdk 0.43
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -255,7 +253,6 @@ pub struct QueryUpgradedConsensusStateRequest {
 #[proto_message(type_url = "/cosmos.upgrade.v1beta1.QueryUpgradedConsensusStateResponse")]
 #[deprecated]
 pub struct QueryUpgradedConsensusStateResponse {
-    /// Since: cosmos-sdk 0.43
     #[prost(bytes = "vec", tag = "2")]
     #[serde(
         serialize_with = "crate::serde::as_base64_encoded_string::serialize",
@@ -265,8 +262,6 @@ pub struct QueryUpgradedConsensusStateResponse {
 }
 /// QueryModuleVersionsRequest is the request type for the Query/ModuleVersions
 /// RPC method.
-///
-/// Since: cosmos-sdk 0.43
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -292,8 +287,6 @@ pub struct QueryModuleVersionsRequest {
 }
 /// QueryModuleVersionsResponse is the response type for the Query/ModuleVersions
 /// RPC method.
-///
-/// Since: cosmos-sdk 0.43
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -312,8 +305,6 @@ pub struct QueryModuleVersionsResponse {
     pub module_versions: ::prost::alloc::vec::Vec<ModuleVersion>,
 }
 /// QueryAuthorityRequest is the request type for Query/Authority
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -332,8 +323,6 @@ pub struct QueryModuleVersionsResponse {
 )]
 pub struct QueryAuthorityRequest {}
 /// QueryAuthorityResponse is the response type for Query/Authority
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -351,8 +340,6 @@ pub struct QueryAuthorityResponse {
     pub address: ::prost::alloc::string::String,
 }
 /// MsgSoftwareUpgrade is the Msg/SoftwareUpgrade request type.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -374,8 +361,6 @@ pub struct MsgSoftwareUpgrade {
     pub plan: ::core::option::Option<Plan>,
 }
 /// MsgSoftwareUpgradeResponse is the Msg/SoftwareUpgrade response type.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -390,8 +375,6 @@ pub struct MsgSoftwareUpgrade {
 #[proto_message(type_url = "/cosmos.upgrade.v1beta1.MsgSoftwareUpgradeResponse")]
 pub struct MsgSoftwareUpgradeResponse {}
 /// MsgCancelUpgrade is the Msg/CancelUpgrade request type.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -410,8 +393,6 @@ pub struct MsgCancelUpgrade {
     pub authority: ::prost::alloc::string::String,
 }
 /// MsgCancelUpgradeResponse is the Msg/CancelUpgrade response type.
-///
-/// Since: cosmos-sdk 0.46
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,

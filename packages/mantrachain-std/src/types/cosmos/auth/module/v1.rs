@@ -22,6 +22,11 @@ pub struct Module {
     /// authority defines the custom module authority. If not set, defaults to the governance module.
     #[prost(string, tag = "3")]
     pub authority: ::prost::alloc::string::String,
+    /// enable_unordered_transactions determines whether unordered transactions should be supported or not.
+    /// When true, unordered transactions will be validated and processed.
+    /// When false, unordered transactions will be rejected.
+    #[prost(bool, tag = "4")]
+    pub enable_unordered_transactions: bool,
 }
 /// ModuleAccountPermission represents permissions for a module account.
 #[allow(clippy::derive_partial_eq_without_eq)]

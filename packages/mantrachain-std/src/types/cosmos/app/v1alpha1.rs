@@ -217,7 +217,7 @@ pub struct GolangBinding {
     response_type = QueryConfigResponse
 )]
 pub struct QueryConfigRequest {}
-/// QueryConfigRequest is the Query/Config response type.
+/// QueryConfigResponse is the Query/Config response type.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -242,6 +242,7 @@ impl<'a, Q: cosmwasm_std::CustomQuery> V1alpha1Querier<'a, Q> {
     pub fn new(querier: &'a cosmwasm_std::QuerierWrapper<'a, Q>) -> Self {
         Self { querier }
     }
+    #[deprecated]
     pub fn config(&self) -> Result<QueryConfigResponse, cosmwasm_std::StdError> {
         QueryConfigRequest {}.query(self.querier)
     }

@@ -57,8 +57,6 @@ pub struct MsgVerifyInvariant {
 #[proto_message(type_url = "/cosmos.crisis.v1beta1.MsgVerifyInvariantResponse")]
 pub struct MsgVerifyInvariantResponse {}
 /// MsgUpdateParams is the Msg/UpdateParams request type.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
@@ -81,8 +79,6 @@ pub struct MsgUpdateParams {
 }
 /// MsgUpdateParamsResponse defines the response structure for executing a
 /// MsgUpdateParams message.
-///
-/// Since: cosmos-sdk 0.47
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(
     Clone,
